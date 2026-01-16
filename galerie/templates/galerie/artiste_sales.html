@@ -328,8 +328,12 @@
       <div class="stat-value">{{ ventes|length }}</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label"><i class="bi bi-check-circle"></i> Statut</div>
-      <div class="stat-value"><span class="sales-badge sales-badge-success"><i class="bi bi-check-circle-fill"></i> Actif</span></div>
+      <div class="stat-label"><i class="bi bi-check-circle"></i> Ventes payées</div>
+      <div class="stat-value">{{ ventes_payees }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><i class="bi bi-hourglass-split"></i> En cours</div>
+      <div class="stat-value">{{ ventes_en_cours }}</div>
     </div>
   </div>
 
@@ -356,21 +360,33 @@
             <tr>
               <td>
                 <a href="{% url 'galerie:oeuvre_detail' vente.oeuvre.pk %}" class="artwork-link">
-                  {{ vente.oeuvre.titre }}
+                  <strong>{{ vente.oeuvre.titre }}</strong>
                 </a>
               </td>
-              <td><strong>{{ vente.quantite }}</strong></td>
-              <td>{{ vente.prix_unitaire|floatformat:2 }} €</td>
-              <td><strong>{{ vente.prix_unitaire|add:0|mul:vente.quantite|floatformat:2 }} €</strong></td>
-              <td>{{ vente.commande.date_commande|date:"d/m/Y" }}</td>
-              <td><strong>{{ vente.commande.client.username }}</strong></td>
+              <td><span class="badge bg-primary">{{ vente.quantite }}</span></td>
+              <td><strong>{{ vente.prix_unitaire|floatformat:2 }} €</strong></td>
               <td>
-                {% if vente.commande.statut == 'completed' %}
-                  <span class="sales-badge sales-badge-success"><i class="bi bi-check-circle-fill"></i> Complétée</span>
-                {% elif vente.commande.statut == 'pending' %}
-                  <span class="sales-badge sales-badge-warning"><i class="bi bi-hourglass-split"></i> En attente</span>
-                {% elif vente.commande.statut == 'cancelled' %}
+                <strong style="color: var(--g2); font-size: 1.1rem;">
+                  {{ vente.prix_unitaire|add:0|mul:vente.quantite|floatformat:2 }} €
+                </strong>
+              </td>
+              <td>
+                <span class="badge bg-info">{{ vente.commande.date_commande|date:"d/m/Y" }}</span>
+              </td>
+              <td>
+                <strong>{{ vente.commande.utilisateur.username }}</strong>
+                <br>
+                <small style="color: #999;">{{ vente.commande.utilisateur.email }}</small>
+              </td>
+              <td>
+                {% if vente.commande.statut == 'payee' %}
+                  <span class="sales-badge sales-badge-success"><i class="bi bi-check-circle-fill"></i> Payée</span>
+                {% elif vente.commande.statut == 'en_cours' %}
+                  <span class="sales-badge sales-badge-warning"><i class="bi bi-hourglass-split"></i> En cours</span>
+                {% elif vente.commande.statut == 'annulee' %}
                   <span class="sales-badge sales-badge-danger"><i class="bi bi-x-circle-fill"></i> Annulée</span>
+                {% elif vente.commande.statut == 'validee' %}
+                  <span class="sales-badge sales-badge-success"><i class="bi bi-check-circle-fill"></i> Validée</span>
                 {% else %}
                   <span class="sales-badge" style="background-color: #e8e8e8; color: #555;"><i class="bi bi-question-circle"></i> {{ vente.commande.statut }}</span>
                 {% endif %}

@@ -127,11 +127,18 @@ def artiste_sales(request):
     ventes = (
         LigneCommande.objects
         .filter(oeuvre__artiste=artiste)
-        .select_related("oeuvre", "commande")
+        .select_related("oeuvre", "commande", "commande__utilisateur")
         .order_by("-commande__date_commande")
     )
 
-    total_ventes = sum(vente.prix_unitaire * vente.quantite for vente in ventes)
+    # Calculer les statistiques
+    total_ventes = 0
+    for vente in ventes:
+        total_ventes += float(vente.prix_unitaire) * vente.quantite
+
+    # Compter les ventes par statut
+    ventes_payees = ventes.filter(commande__statut="payee").count()
+    ventes_en_cours = ventes.filter(commande__statut="en_cours").count()
 
     return render(
         request,
@@ -140,6 +147,8 @@ def artiste_sales(request):
             "artiste": artiste,
             "ventes": ventes,
             "total_ventes": total_ventes,
+            "ventes_payees": ventes_payees,
+            "ventes_en_cours": ventes_en_cours,
         },
     )
 
