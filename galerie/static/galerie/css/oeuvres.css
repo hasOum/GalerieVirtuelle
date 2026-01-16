@@ -1,0 +1,161 @@
+/* Theme colors (same idea as expositions.css) */
+:root{
+  --g1: #243748;
+  --g2: #4B749F;
+}
+
+/* Hero */
+.oeuvre-hero{
+  background: linear-gradient(90deg, var(--g1), var(--g2));
+  color: #fff;
+  border-radius: 18px;
+  padding: 1.25rem 1.25rem;
+}
+
+.oeuvre-title{
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.oeuvre-subtitle{
+  opacity: 0.9;
+}
+
+.oeuvre-count{
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  padding: .6rem 1rem;
+  border-radius: 999px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Filter card */
+.oeuvre-filter-card{
+  border: 0;
+  border-radius: 18px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+  backdrop-filter: blur(6px);
+  background: #fff;
+}
+
+/* Gradient button */
+.btn-gradient{
+  background: linear-gradient(135deg, var(--g1), var(--g2));
+  border: none;
+  color: #fff;
+  border-radius: 999px;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.btn-gradient:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(36,55,72,0.35);
+  color: #fff;
+}
+
+/* Cards */
+.oeuvre-card{
+  border: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.10);
+  transition: transform .2s ease, box-shadow .2s ease;
+  background: #fff;
+}
+
+.oeuvre-card:hover{
+  transform: translateY(-6px);
+  box-shadow: 0 22px 55px rgba(0,0,0,0.16);
+}
+
+/* Image */
+.oeuvre-img-wrap{
+  position: relative;
+}
+
+.oeuvre-img{
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  display: block;
+}
+
+.oeuvre-img-placeholder{
+  background: #f2f4f7;
+}
+
+/* Badge */
+.oeuvre-badge{
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: .45rem .7rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(36,55,72,0.15);
+  font-weight: 800;
+  color: #111;
+}
+
+/* Body */
+.oeuvre-body{
+  padding: 1rem 1rem 1.1rem 1rem;
+}
+
+.oeuvre-name{
+  font-weight: 800;
+  color: #111;
+  margin: 0 0 .35rem 0;
+}
+
+.oeuvre-artist{
+  color: rgba(0,0,0,0.65);
+  font-weight: 700;
+  margin-bottom: .6rem;
+}
+
+.oeuvre-desc{
+  color: rgba(0,0,0,0.65);
+}
+
+/* Meta blocks (like expo-meta) */
+.oeuvre-meta{
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+}
+
+.oeuvre-meta-item{
+  flex: 1 1 120px;
+  border: 1px solid rgba(36,55,72,0.12);
+  border-radius: 12px;
+  padding: .6rem .75rem;
+  background: #fff;
+}
+
+.oeuvre-meta-label{
+  display: block;
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: rgba(0,0,0,0.55);
+}
+
+.oeuvre-meta-value{
+  font-weight: 800;
+  color: #111;
+}
+
+/* Empty state */
+.oeuvre-empty{
+  border: 1px dashed rgba(36,55,72,0.25);
+  border-radius: 18px;
+  background: #fff;
+}
+
+/* Responsive */
+@media (max-width: 576px){
+  .oeuvre-img{ height: 200px; }
+  .oeuvre-hero{ padding: 1rem; }
+}

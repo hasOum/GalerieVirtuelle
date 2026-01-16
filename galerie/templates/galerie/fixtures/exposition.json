@@ -1,0 +1,67 @@
+[
+  {
+    "model": "galerie.exposition",
+    "pk": 1,
+    "fields": {
+      "nom_exposition": "Regards Contemporains",
+      "description": "Une exposition collective mettant en avant des œuvres contemporaines.",
+      "date_debut": "2026-02-01",
+      "date_fin": "2026-02-20",
+      "lieu": null,
+      "affiche": "regards_contemporains.jpg",
+      "oeuvres": [1, 2, 3, 4]
+    }
+  },
+  {
+    "model": "galerie.exposition",
+    "pk": 2,
+    "fields": {
+      "nom_exposition": "Couleurs du Sud",
+      "description": "Exploration artistique des palettes et paysages du sud.",
+      "date_debut": "2026-03-05",
+      "date_fin": "2026-03-25",
+      "lieu": null,
+      "affiche": "couleurs_du_sud.jpg",
+      "oeuvres": [5, 6, 8]
+    }
+  },
+  {
+    "model": "galerie.exposition",
+    "pk": 3,
+    "fields": {
+      "nom_exposition": "Abstractions Modernes",
+      "description": "Une sélection d'œuvres abstraites modernes.",
+      "date_debut": "2026-04-10",
+      "date_fin": "2026-04-30",
+      "lieu": null,
+      "affiche": "expositions/abstractions_modernes.jpg",
+      "oeuvres": [1, 9, 10]
+    }
+  },
+  {
+    "model": "galerie.exposition",
+    "pk": 4,
+    "fields": {
+      "nom_exposition": "Photographie & Silence",
+      "description": "Regards photographiques entre urbanisme et introspection.",
+      "date_debut": "2026-05-12",
+      "date_fin": "2026-06-01",
+      "lieu": null,
+      "affiche": "expositions/photographie_silence.jpg",
+      "oeuvres": [2, 7]
+    }
+  },
+  {
+    "model": "galerie.exposition",
+    "pk": 5,
+    "fields": {
+      "nom_exposition": "Matière & Relief",
+      "description": "Dialogue entre textures, matière et volume.",
+      "date_debut": "2026-06-15",
+      "date_fin": "2026-07-05",
+      "lieu": null,
+      "affiche": "expositions/matiere_relief.jpg",
+      "oeuvres": [3, 4, 6, 10]
+    }
+  }
+]

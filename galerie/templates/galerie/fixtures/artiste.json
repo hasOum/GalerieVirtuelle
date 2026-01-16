@@ -1,0 +1,4 @@
+[
+  { "model": "galerie.artiste", "pk": 1, "fields": { "user": 1, "nom": "Pablo Picasso", "date_naissance": "1881-10-25", "nationalite": "Espagnol", "biographie": "Peintre espagnol...", "photo_profil": "" } },
+  { "model": "galerie.artiste", "pk": 2, "fields": { "user": 2, "nom": "Vincent van Gogh", "date_naissance": "1853-03-30", "nationalite": "Néerlandais", "biographie": "Peintre post-impressionniste...", "photo_profil": "" } }
+]

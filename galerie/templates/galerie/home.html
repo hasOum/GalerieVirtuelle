@@ -1,0 +1,119 @@
+{% extends 'galerie/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-overlay">
+        <div class="hero-content">
+            <h1 class="hero-title">Galerie Virtuelle</h1>
+            <p class="hero-subtitle">Découvrez l'art sous un nouveau jour</p>
+
+        <div class="hero-buttons d-flex flex-wrap gap-2 align-items-center">
+
+        <!-- Section: Visiteur -->
+        <div class="btn-group" role="group" aria-label="Visiteur">
+            <a href="{% url 'galerie:oeuvres_list' %}" class="btn btn-primary btn-lg">
+            Explorer les Œuvres
+            </a>
+            <a href="{% url 'galerie:expositions_list' %}" class="btn btn-outline-light btn-lg">
+            Voir les Expositions
+            </a>
+        </div>
+
+        <!-- Section: Login / Compte -->
+        <div class="btn-group ms-lg-3" role="group" aria-label="Compte">
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'galerie:logout' %}?next={% url 'galerie:home' %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-warning btn-lg">Logout</button>
+            </form>
+            {% else %}
+            <a href="{% url 'galerie:login' %}" class="btn btn-light btn-lg">Login</a>
+            <a href="{% url 'galerie:register' %}" class="btn btn-outline-light btn-lg">Créer un compte</a>
+            {% endif %}
+        </div>
+
+    </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="container my-5">
+  <div class="row text-center g-4">
+
+    <!-- VISITEUR -->
+    <div class="col-md-6">
+      <div class="card shadow h-100">
+        <div class="card-body">
+          <h3 class="card-title">Visiteur</h3>
+          <p class="card-text">Explorez librement notre galerie virtuelle</p>
+          <a href="{% url 'galerie:oeuvres_list' %}" class="btn btn-primary m-1">
+            Explorer les Œuvres
+          </a>
+          <a href="{% url 'galerie:expositions_list' %}" class="btn btn-outline-secondary m-1">
+            Voir les Expositions
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPTE -->
+    <div class="col-md-6">
+      <div class="card shadow h-100">
+        <div class="card-body">
+          <h3 class="card-title">Compte</h3>
+
+          {% if user.is_authenticated %}
+            <p class="card-text">Vous êtes connecté</p>
+            <form method="post" action="{% url 'galerie:logout' %}?next={% url 'galerie:home' %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-warning btn-lg">Logout</button>
+            </form>
+          {% else %}
+            <p class="card-text">Connectez-vous ou créez un compte</p>
+            <a href="{% url 'login' %}" class="btn btn-light m-1">
+              Login
+            </a>
+            <a href="{% url 'galerie:register' %}" class="btn btn-outline-dark m-1">
+              Créer un compte
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- Features Section -->
+<div class="container my-5">
+  <div class="row text-center">
+    <div class="col-md-4 mb-4">
+      <div class="feature-box">
+        <i class="bi bi-palette fs-1" style="color: #243748;"></i>
+        <h3 class="mt-3">Collections Uniques</h3>
+        <p>Explorez des œuvres d'art exceptionnelles de différents artistes</p>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="feature-box">
+        <i class="bi bi-calendar-event fs-1" style="color:  #243748;"></i>
+        <h3 class="mt-3">Expositions</h3>
+        <p>Participez à nos expositions virtuelles thématiques</p>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="feature-box">
+        <i class="bi bi-globe fs-1" style="color:  #243748;"></i>
+        <h3 class="mt-3">Accessible 24/7</h3>
+        <p>Visitez la galerie à tout moment, où que vous soyez</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

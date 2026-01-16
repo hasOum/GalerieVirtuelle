@@ -1,0 +1,342 @@
+{% extends 'galerie/base.html' %}
+{% load static %}
+{% block title %}Espace Artiste | GalerieVirtuelle{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'galerie/css/oeuvres.css' %}">
+<style>
+  :root {
+    --g1: #243748;
+    --g2: #4B749F;
+  }
+
+  .artiste-hero {
+    background: linear-gradient(90deg, var(--g1), var(--g2));
+    color: #fff;
+    border-radius: 18px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  .artiste-hero h2 {
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+    font-size: 2.2rem;
+  }
+
+  .artiste-hero p {
+    opacity: 0.9;
+    margin: 0;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary-action {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: #fff;
+    border-radius: 999px;
+    padding: 0.7rem 1.4rem;
+    text-decoration: none;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(32, 201, 151, 0.35);
+    color: #fff;
+  }
+
+  .btn-secondary-action {
+    background: linear-gradient(135deg, var(--g1), var(--g2));
+    color: #fff;
+    border-radius: 999px;
+    padding: 0.7rem 1.4rem;
+    text-decoration: none;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-secondary-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(36, 55, 72, 0.35);
+    color: #fff;
+  }
+
+  .oeuvres-table-card {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  .oeuvres-table-card .card-header {
+    background: linear-gradient(90deg, var(--g1), var(--g2));
+    color: #fff;
+    padding: 1.5rem;
+    border: none;
+  }
+
+  .oeuvres-table-card .card-header h5 {
+    margin: 0;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    font-size: 1.3rem;
+  }
+
+  .oeuvres-table-card table {
+    margin-bottom: 0;
+  }
+
+  .oeuvres-table-card table thead {
+    background-color: #f8f9fa;
+  }
+
+  .oeuvres-table-card table thead th {
+    border-bottom: 2px solid #e0e0e0;
+    color: var(--g1);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.6px;
+    padding: 1.2rem 1rem;
+  }
+
+  .oeuvres-table-card table tbody td {
+    padding: 1.2rem 1rem;
+    vertical-align: middle;
+    border-color: #f0f0f0;
+  }
+
+  .oeuvres-table-card table tbody tr {
+    transition: background-color 0.2s ease;
+  }
+
+  .oeuvres-table-card table tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+
+  .oeuvre-title {
+    font-weight: 700;
+    color: var(--g1);
+  }
+
+  .statut-badge {
+    padding: 0.5rem 0.8rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    display: inline-block;
+  }
+
+  .statut-en_attente {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+
+  .statut-valide {
+    background-color: #d4edda;
+    color: #155724;
+  }
+
+  .statut-refuse {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+
+  .action-links {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .btn-action {
+    background: var(--g2);
+    color: #fff;
+    border-radius: 8px;
+    padding: 0.5rem 0.8rem;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .btn-action:hover {
+    background: var(--g1);
+    transform: translateY(-2px);
+  }
+
+  .btn-action-edit {
+    background: #6c757d;
+  }
+
+  .btn-action-edit:hover {
+    background: #5a6268;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #999;
+  }
+
+  .empty-state i {
+    font-size: 3rem;
+    color: #ddd;
+    margin-bottom: 1rem;
+  }
+
+  .empty-state p {
+    margin: 0.5rem 0;
+  }
+
+  .empty-state strong {
+    color: #333;
+    font-size: 1.1rem;
+  }
+
+  @media (max-width: 768px) {
+    .artiste-hero {
+      padding: 1.5rem;
+    }
+
+    .artiste-hero h2 {
+      font-size: 1.8rem;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+    }
+
+    .btn-primary-action,
+    .btn-secondary-action {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .oeuvres-table-card table {
+      font-size: 0.85rem;
+    }
+
+    .oeuvres-table-card table thead th,
+    .oeuvres-table-card table tbody td {
+      padding: 0.8rem 0.5rem;
+    }
+
+    .action-links {
+      flex-direction: column;
+    }
+
+    .btn-action {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <!-- Hero Section -->
+  <div class="artiste-hero">
+    <h2><i class="bi bi-palette-fill"></i> Espace Artiste</h2>
+    <p>Gérez vos œuvres et suivez vos ventes</p>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="action-buttons">
+    <a href="{% url 'galerie:oeuvre_create' %}" class="btn-primary-action">
+      <i class="bi bi-plus-lg"></i> Ajouter une œuvre
+    </a>
+    <a href="{% url 'galerie:artiste_sales' %}" class="btn-secondary-action">
+      <i class="bi bi-graph-up"></i> Voir mes ventes
+    </a>
+  </div>
+
+  <!-- Oeuvres Table -->
+  <div class="oeuvres-table-card">
+    <div class="card-header">
+      <h5><i class="bi bi-image"></i> Mes œuvres</h5>
+    </div>
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Titre</th>
+            <th>Catégorie</th>
+            <th>Statut</th>
+            <th>Prix</th>
+            <th>Stock</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for o in oeuvres %}
+            <tr>
+              <td class="oeuvre-title">{{ o.titre }}</td>
+              <td>{{ o.categorie.nom_categorie|default:"Non défini" }}</td>
+              <td>
+                <span class="statut-badge statut-{{ o.statut }}">
+                  {% if o.statut == 'en_attente' %}
+                    <i class="bi bi-hourglass-split"></i> En attente
+                  {% elif o.statut == 'valide' %}
+                    <i class="bi bi-check-circle"></i> Validée
+                  {% elif o.statut == 'refuse' %}
+                    <i class="bi bi-x-circle"></i> Refusée
+                  {% endif %}
+                </span>
+              </td>
+              <td><strong>{{ o.prix|floatformat:2 }} €</strong></td>
+              <td>{{ o.stock }}</td>
+              <td>
+                <div class="action-links">
+                  <a href="{% url 'galerie:oeuvre_detail' o.pk %}" class="btn-action">
+                    <i class="bi bi-eye"></i> Voir
+                  </a>
+                  <a href="{% url 'galerie:oeuvre_update' o.pk %}" class="btn-action btn-action-edit">
+                    <i class="bi bi-pencil"></i> Modifier
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6">
+                <div class="empty-state">
+                  <i class="bi bi-inbox"></i>
+                  <p><strong>Aucune œuvre pour le moment</strong></p>
+                  <p style="font-size: 0.9rem; color: #999;">Commencez à partager vos créations en ajouter une nouvelle.</p>
+                  <a href="{% url 'galerie:oeuvre_create' %}" class="btn-primary-action" style="margin-top: 1rem;">
+                    <i class="bi bi-plus-lg"></i> Créer votre première œuvre
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

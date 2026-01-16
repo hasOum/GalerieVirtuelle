@@ -1,0 +1,33 @@
+_{% extends 'galerie/base.html' %}
+{% block title %}Panier{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Mon panier</h2>
+
+  {% if panier.items.all %}
+    <table class="table">
+      <thead>
+        <tr><th>Œuvre</th><th>Quantité</th><th>Prix</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for item in panier.items.all %}
+          <tr>
+            <td>{{ item.oeuvre.titre }}</td>
+            <td>{{ item.quantite }}</td>
+            <td>{{ item.sous_total }}</td>
+            <td>
+              <a class="btn btn-sm btn-outline-danger"
+                 href="{% url 'galerie:cart_remove' item.oeuvre.id %}">Supprimer</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <p><strong>Total:</strong> {{ panier.total }}</p>
+    <a class="btn btn-dark" href="{% url 'galerie:checkout' %}">Commander</a>
+  {% else %}
+    <p class="text-muted">Panier vide.</p>
+  {% endif %}
+</div>
+{% endblock %}

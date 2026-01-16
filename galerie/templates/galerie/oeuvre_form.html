@@ -1,0 +1,446 @@
+{% extends 'galerie/base.html' %}
+{% load static %}
+
+{% block title %}Ajouter une œuvre | GalerieVirtuelle{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'galerie/css/oeuvres.css' %}">
+<style>
+  :root {
+    --g1: #243748;
+    --g2: #4B749F;
+  }
+
+  .form-hero {
+    background: linear-gradient(90deg, var(--g1), var(--g2));
+    color: #fff;
+    border-radius: 18px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  .form-hero h2 {
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+    font-size: 2.2rem;
+  }
+
+  .form-hero p {
+    opacity: 0.9;
+    margin: 0;
+  }
+
+  .form-container {
+    background: #fff;
+    border-radius: 18px;
+    padding: 2rem;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+  }
+
+  .form-section {
+    margin-bottom: 2.5rem;
+  }
+
+  .form-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .form-section-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--g1);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--g2);
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: var(--g2);
+    box-shadow: 0 0 0 3px rgba(75, 116, 159, 0.1);
+  }
+
+  .form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .form-group input[type="file"] {
+    padding: 0.5rem;
+    cursor: pointer;
+  }
+
+  .file-input-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .file-input-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 150px;
+    border: 2px dashed var(--g2);
+    border-radius: 10px;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .file-input-label:hover {
+    border-color: var(--g1);
+    background-color: #f0f0f0;
+  }
+
+  .file-input-label i {
+    font-size: 2rem;
+    color: var(--g2);
+    margin-right: 0.5rem;
+  }
+
+  .file-input-label span {
+    text-align: center;
+  }
+
+  .file-input-label span strong {
+    display: block;
+    color: var(--g1);
+    margin-bottom: 0.25rem;
+  }
+
+  .file-input-label span small {
+    color: #999;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .form-row.full {
+    grid-template-columns: 1fr;
+  }
+
+  .error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #dc3545;
+  }
+
+  .error-message ul {
+    margin: 0;
+    padding-left: 1.5rem;
+  }
+
+  .error-message li {
+    margin-bottom: 0.5rem;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    justify-content: space-between;
+  }
+
+  .btn-submit,
+  .btn-cancel {
+    padding: 0.85rem 2rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-submit {
+    background: linear-gradient(135deg, var(--g1), var(--g2));
+    color: #fff;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(36, 55, 72, 0.35);
+  }
+
+  .btn-cancel {
+    background-color: #e0e0e0;
+    color: #333;
+  }
+
+  .btn-cancel:hover {
+    background-color: #d0d0d0;
+  }
+
+  .form-help {
+    background-color: #e7f3ff;
+    border-left: 4px solid var(--g2);
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #333;
+    margin-bottom: 2rem;
+  }
+
+  .form-help strong {
+    color: var(--g1);
+  }
+
+  @media (max-width: 768px) {
+    .form-container {
+      padding: 1.5rem;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+
+    .form-hero {
+      padding: 1.5rem;
+    }
+
+    .form-hero h2 {
+      font-size: 1.8rem;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .btn-submit,
+    .btn-cancel {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <!-- Hero Section -->
+  <div class="form-hero">
+    <h2><i class="bi bi-plus-circle"></i> Ajouter une nouvelle œuvre</h2>
+    <p>Partagez votre création avec la communauté</p>
+  </div>
+
+  <div class="form-container">
+    <!-- Help Info -->
+    <div class="form-help">
+      <strong><i class="bi bi-info-circle"></i> Important :</strong>
+      Votre œuvre sera soumise à validation avant d'être affichée publiquement. Cela peut prendre quelques heures.
+    </div>
+
+    <!-- Error Messages -->
+    {% if form.non_field_errors %}
+      <div class="error-message">
+        <strong><i class="bi bi-exclamation-triangle"></i> Erreur lors de la soumission :</strong>
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+
+      <!-- Section: Information de base -->
+      <div class="form-section">
+        <h3 class="form-section-title"><i class="bi bi-pencil-square"></i> Informations de base</h3>
+
+        <div class="form-group">
+          <label for="{{ form.titre.id_for_label }}">Titre de l'œuvre *</label>
+          {{ form.titre }}
+          {% if form.titre.errors %}
+            <small class="error-message">{{ form.titre.errors }}</small>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.description.id_for_label }}">Description</label>
+          {{ form.description }}
+          {% if form.description.errors %}
+            <small class="error-message">{{ form.description.errors }}</small>
+          {% endif %}
+          <small style="color: #999; display: block; margin-top: 0.5rem;">
+            <i class="bi bi-lightbulb"></i> Décrivez votre œuvre, son inspiration, sa technique...
+          </small>
+        </div>
+      </div>
+
+      <!-- Section: Détails artistiques -->
+      <div class="form-section">
+        <h3 class="form-section-title"><i class="bi bi-palette"></i> Détails artistiques</h3>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="{{ form.technique.id_for_label }}">Technique</label>
+            {{ form.technique }}
+            {% if form.technique.errors %}
+              <small class="error-message">{{ form.technique.errors }}</small>
+            {% endif %}
+            <small style="color: #999; display: block; margin-top: 0.5rem;">Ex: Huile sur toile, Acrylique, Aquarelle...</small>
+          </div>
+
+          <div class="form-group">
+            <label for="{{ form.annee_creation.id_for_label }}">Année de création</label>
+            {{ form.annee_creation }}
+            {% if form.annee_creation.errors %}
+              <small class="error-message">{{ form.annee_creation.errors }}</small>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.categorie.id_for_label }}">Catégorie *</label>
+          {{ form.categorie }}
+          {% if form.categorie.errors %}
+            <small class="error-message">{{ form.categorie.errors }}</small>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Section: Image -->
+      <div class="form-section">
+        <h3 class="form-section-title"><i class="bi bi-image"></i> Image de l'œuvre</h3>
+
+        <div class="file-input-wrapper">
+          <label for="{{ form.image.id_for_label }}" class="file-input-label">
+            <span>
+              <i class="bi bi-cloud-upload"></i>
+              <strong>Cliquez pour télécharger</strong>
+              <small>ou glissez-déposez une image</small>
+            </span>
+          </label>
+          {{ form.image }}
+        </div>
+        {% if form.image.errors %}
+          <div class="error-message" style="margin-top: 1rem;">
+            <strong><i class="bi bi-exclamation-triangle"></i> Erreur image :</strong>
+            {{ form.image.errors }}
+          </div>
+        {% endif %}
+        <small style="color: #999; display: block; margin-top: 0.75rem;">
+          <i class="bi bi-info-circle"></i> Formats acceptés: JPEG, PNG. Taille max: 10MB
+        </small>
+      </div>
+
+      <!-- Section: Tarification et stock -->
+      <div class="form-section">
+        <h3 class="form-section-title"><i class="bi bi-tag"></i> Tarification</h3>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="{{ form.prix.id_for_label }}">Prix (€) *</label>
+            {{ form.prix }}
+            {% if form.prix.errors %}
+              <small class="error-message">{{ form.prix.errors }}</small>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="{{ form.stock.id_for_label }}">Stock disponible *</label>
+            {{ form.stock }}
+            {% if form.stock.errors %}
+              <small class="error-message">{{ form.stock.errors }}</small>
+            {% endif %}
+            <small style="color: #999; display: block; margin-top: 0.5rem;">
+              Nombre de copies disponibles à la vente
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <a href="{% url 'galerie:artiste_dashboard' %}" class="btn-cancel">
+          <i class="bi bi-x-lg"></i> Annuler
+        </a>
+        <button type="submit" class="btn-submit">
+          <i class="bi bi-check-lg"></i> Soumettre l'œuvre
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Drag and drop for file input
+  const fileInput = document.querySelector('input[type="file"]');
+  const fileLabel = document.querySelector('.file-input-label');
+
+  if (fileInput && fileLabel) {
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      fileLabel.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      fileLabel.addEventListener(eventName, () => {
+        fileLabel.style.backgroundColor = '#e7f3ff';
+        fileLabel.style.borderColor = '#243748';
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      fileLabel.addEventListener(eventName, () => {
+        fileLabel.style.backgroundColor = '#f8f9fa';
+        fileLabel.style.borderColor = '#4B749F';
+      });
+    });
+
+    fileLabel.addEventListener('drop', (e) => {
+      fileInput.files = e.dataTransfer.files;
+      // Update label text to show file name
+      if (fileInput.files.length > 0) {
+        fileLabel.innerHTML = `<span><i class="bi bi-check-circle" style="color: #28a745;"></i> <strong>${fileInput.files[0].name}</strong><small>Sélectionné</small></span>`;
+      }
+    });
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length > 0) {
+        fileLabel.innerHTML = `<span><i class="bi bi-check-circle" style="color: #28a745;"></i> <strong>${fileInput.files[0].name}</strong><small>Sélectionné</small></span>`;
+      }
+    });
+  }
+</script>
+{% endblock %}

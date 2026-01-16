@@ -1,0 +1,118 @@
+/* Theme colors (same as your home/login) */
+:root{
+  --g1: #243748;
+  --g2: #4B749F;
+}
+
+/* Hero header */
+.expo-hero{
+  background: linear-gradient(90deg, var(--g1), var(--g2));
+  color: #fff;
+}
+
+.expo-title{
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.expo-subtitle{
+  opacity: 0.9;
+}
+
+/* Count badge */
+.expo-count{
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  padding: .6rem 1rem;
+}
+
+/* Filter card */
+.expo-filter-card{
+  border: 0;
+  border-radius: 18px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+  backdrop-filter: blur(6px);
+}
+
+.btn-gradient{
+  background: linear-gradient(135deg, var(--g1), var(--g2));
+  border: none;
+  color: #fff;
+  border-radius: 999px;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.btn-gradient:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(36,55,72,0.35);
+  color: #fff;
+}
+
+/* Expo cards */
+.expo-card{
+  border: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.10);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.expo-card:hover{
+  transform: translateY(-6px);
+  box-shadow: 0 22px 55px rgba(0,0,0,0.16);
+}
+
+.expo-img-wrap{
+  position: relative;
+}
+
+.expo-img{
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  display: block;
+}
+
+.expo-img-placeholder{
+  background: #f2f4f7;
+}
+
+.expo-badge{
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: .45rem .7rem;
+  border-radius: 999px;
+}
+
+/* Meta list */
+.expo-meta{
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+}
+
+.expo-meta-item{
+  flex: 1 1 120px;
+  border: 1px solid rgba(36,55,72,0.12);
+  border-radius: 12px;
+  padding: .6rem .75rem;
+  background: #fff;
+}
+
+.expo-meta-full{
+  flex-basis: 100%;
+}
+
+.expo-meta-label{
+  display: block;
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: rgba(0,0,0,0.55);
+}
+
+.expo-meta-value{
+  font-weight: 700;
+  color: #111;
+}

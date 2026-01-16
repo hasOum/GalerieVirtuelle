@@ -1,0 +1,21 @@
+[
+  { "model": "galerie.oeuvre", "pk": 1, "fields": { "titre": "Oasis Rouge", "description": "Abstraction chaude et textures.", "image": "oeuvres/oasis_rouge.jpg", "technique": "Acrylique", "annee_creation": 2024, "prix": "1200.00", "stock": 1, "statut": "valide", "artiste": 1, "categorie": null, "date_soumission": "2026-01-02T10:00:00Z", "date_validation": "2026-01-03T10:00:00Z" } },
+
+  { "model": "galerie.oeuvre", "pk": 2, "fields": { "titre": "Médina Noire", "description": "Photographie noir et blanc.", "image": "oeuvres/medina_noire.jpg", "technique": "Numérique", "annee_creation": 2025, "prix": "650.00", "stock": 2, "statut": "valide", "artiste": 1, "categorie": null, "date_soumission": "2026-01-03T11:00:00Z", "date_validation": "2026-01-04T09:30:00Z" } },
+
+  { "model": "galerie.oeuvre", "pk": 3, "fields": { "titre": "Gueliz Lines", "description": "Formes géométriques minimalistes.", "image": "oeuvres/gueliz_lines.jpg", "technique": "Mixte", "annee_creation": 2023, "prix": "900.00", "stock": 1, "statut": "valide", "artiste": 1, "categorie": null, "date_soumission": "2026-01-04T14:20:00Z", "date_validation": "2026-01-05T10:15:00Z" } },
+
+  { "model": "galerie.oeuvre", "pk": 4, "fields": { "titre": "Couleurs Nomades", "description": "Palette vive inspirée des routes du sud.", "image": "oeuvres/couleurs_nomades.jpg", "technique": "Acrylique", "annee_creation": 2024, "prix": "1400.00", "stock": 1, "statut": "valide", "artiste": 1, "categorie": null, "date_soumission": "2026-01-05T09:10:00Z", "date_validation": "2026-01-05T18:30:00Z" } },
+
+  { "model": "galerie.oeuvre", "pk": 5, "fields": { "titre": "Portrait Lune", "description": "Portrait doux, lumière naturelle.", "image": "oeuvres/portrait_lune.jpg", "technique": "Huile", "annee_creation": 2022, "prix": "1800.00", "stock": 1, "statut": "valide", "artiste": 1, "categorie": null, "date_soumission": "2026-01-05T16:00:00Z", "date_validation": "2026-01-06T09:00:00Z" } },
+
+  { "model": "galerie.oeuvre", "pk": 6, "fields": { "titre": "Rythmes Dakar", "description": "Composition dynamique et couleurs vives.", "image": "oeuvres/rythmes_dakar.jpg", "technique": "Acrylique", "annee_creation": 2025, "prix": "1100.00", "stock": 3, "statut": "valide", "artiste": 1, "categorie": null, "date_soumission": "2026-01-06T12:00:00Z", "date_validation": "2026-01-06T20:00:00Z" } },
+
+  { "model": "galerie.oeuvre", "pk": 7, "fields": { "titre": "Scène Silencieuse", "description": "Photographie conceptuelle mise en scène.", "image": "oeuvres/scene_silencieuse.jpg", "technique": "Numérique", "annee_creation": 2024, "prix": "750.00", "stock": 2, "statut": "valide", "artiste": 1, "categorie": null, "date_soumission": "2026-01-07T08:30:00Z", "date_validation": "2026-01-07T19:00:00Z" } },
+
+  { "model": "galerie.oeuvre", "pk": 8, "fields": { "titre": "Place Vivante", "description": "Scène urbaine figurative.", "image": "oeuvres/place_vivante.jpg", "technique": "Acrylique", "annee_creation": 2023, "prix": "1300.00", "stock": 1, "statut": "en_attente", "artiste": 1, "categorie": null, "date_soumission": "2026-01-07T10:00:00Z", "date_validation": null } },
+
+  { "model": "galerie.oeuvre", "pk": 9, "fields": { "titre": "Atlantique Bleu", "description": "Grand format abstrait, couches de bleu.", "image": "oeuvres/atlantique_bleu.jpg", "technique": "Huile", "annee_creation": 2025, "prix": "2500.00", "stock": 1, "statut": "valide", "artiste": 1, "categorie": null, "date_soumission": "2026-01-08T09:45:00Z", "date_validation": "2026-01-08T18:00:00Z" } },
+
+  { "model": "galerie.oeuvre", "pk": 10, "fields": { "titre": "Terre & Matière", "description": "Travail matière et relief.", "image": "oeuvres/terre_matiere.jpg", "technique": "Mixte", "annee_creation": 2022, "prix": "1600.00", "stock": 1, "statut": "refuse", "artiste": 1, "categorie": null, "date_soumission": "2026-01-08T13:00:00Z", "date_validation": "2026-01-09T10:00:00Z" } }
+]

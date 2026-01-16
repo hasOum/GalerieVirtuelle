@@ -1,0 +1,40 @@
+{% extends 'galerie/base.html' %}
+{% block title %}Admin Dashboard | GalerieVirtuelle{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-3">Dashboard Admin</h2>
+
+  <div class="row g-3">
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Gestion Artistes</h5>
+          <p class="card-text">Créer / modifier / supprimer des artistes.</p>
+          <a class="btn btn-dark btn-sm" href="{% url 'admin:galerie_artiste_changelist' %}">Ouvrir dans Admin Django</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Validation œuvres</h5>
+          <p class="card-text">Valider/refuser les œuvres en attente.</p>
+          <a class="btn btn-outline-dark btn-sm" href="{% url 'galerie:admin_validation_list' %}">Voir les œuvres en attente</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-danger">
+        <div class="card-body">
+          <h5 class="card-title">Annulations commandes</h5>
+          <p class="card-text">Règlement des demandes d’annulation.</p>
+          <a class="btn btn-outline-danger btn-sm" href="{% url 'galerie:admin_cancellations' %}">Gérer annulations</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,187 @@
+{% extends 'galerie/base.html' %}
+{% load static %}
+
+{% block title %}Inscription | GalerieVirtuelle{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'galerie/css/loginCss.css' %}">
+<style>
+  .role-info {
+    background-color: #f8f9fa;
+    border-left: 4px solid #007bff;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+  }
+  .role-info h5 {
+    margin-top: 0;
+    color: #007bff;
+  }
+  .role-selector {
+    display: flex;
+    gap: 15px;
+    margin: 20px 0;
+  }
+  .role-option {
+    flex: 1;
+    padding: 15px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .role-option:hover {
+    border-color: #007bff;
+    background-color: #f8f9fa;
+  }
+  .role-option.selected {
+    border-color: #007bff;
+    background-color: #e7f3ff;
+  }
+  .role-option h6 {
+    margin: 0 0 8px 0;
+    color: #333;
+  }
+  .role-option p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #666;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid page-content">
+  <div class="login-wrapper">
+    <div class="login-card">
+      <h1>Créer un compte</h1>
+      <p>Rejoignez Galerie Virtuelle</p>
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <!-- Explication des rôles -->
+      <div class="role-info">
+        <h5><i class="bi bi-info-circle"></i> Qui êtes-vous ?</h5>
+        <ul style="margin: 10px 0; padding-left: 20px;">
+          <li><strong>Visiteur/Client :</strong> Parcourez et achetez des œuvres d'art</li>
+          <li><strong>Artiste :</strong> Exposez et vendez vos créations</li>
+        </ul>
+        <p style="margin: 10px 0; font-size: 0.9rem; color: #666;">
+          <i class="bi bi-shield-lock"></i> Les administrateurs sont gérés par le système
+        </p>
+      </div>
+
+      <form method="post">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <!-- Informations de base -->
+        <h6 class="mt-4 mb-3">Informations personnelles</h6>
+
+        <div class="form-group">
+          <input type="text" name="username" placeholder="Nom d'utilisateur" class="form-control" required
+                 value="{{ form.username.value|default:'' }}">
+          {% if form.username.errors %}<small class="error-text">{{ form.username.errors }}</small>{% endif %}
+        </div>
+
+        <div class="form-group">
+          <input type="email" name="email" placeholder="Email" class="form-control" required
+                 value="{{ form.email.value|default:'' }}">
+          {% if form.email.errors %}<small class="error-text">{{ form.email.errors }}</small>{% endif %}
+        </div>
+
+        <div class="form-group">
+          <input type="text" name="first_name" placeholder="Prénom (optionnel)" class="form-control"
+                 value="{{ form.first_name.value|default:'' }}">
+          {% if form.first_name.errors %}<small class="error-text">{{ form.first_name.errors }}</small>{% endif %}
+        </div>
+
+        <div class="form-group">
+          <input type="text" name="last_name" placeholder="Nom (optionnel)" class="form-control"
+                 value="{{ form.last_name.value|default:'' }}">
+          {% if form.last_name.errors %}<small class="error-text">{{ form.last_name.errors }}</small>{% endif %}
+        </div>
+
+        <div class="form-group">
+          <input type="password" name="password1" placeholder="Mot de passe" class="form-control" required>
+          {% if form.password1.errors %}<small class="error-text">{{ form.password1.errors }}</small>{% endif %}
+        </div>
+
+        <div class="form-group">
+          <input type="password" name="password2" placeholder="Confirmer mot de passe" class="form-control" required>
+          {% if form.password2.errors %}<small class="error-text">{{ form.password2.errors }}</small>{% endif %}
+        </div>
+
+        <!-- Sélecteur de rôle -->
+        <h6 class="mt-4 mb-3">Type de compte</h6>
+
+        <div class="form-check">
+          <input type="checkbox" name="is_artiste" id="is_artiste_check" class="form-check-input"
+                 {% if form.is_artiste.value %}checked{% endif %}>
+          <label class="form-check-label" for="is_artiste_check">
+            <i class="bi bi-palette-fill"></i> Je suis artiste
+          </label>
+          {% if form.is_artiste.errors %}<small class="error-text">{{ form.is_artiste.errors }}</small>{% endif %}
+        </div>
+
+        <!-- Champs artiste (optionnels) -->
+        <div id="artisteFields" style="display:none; margin-top: 20px;">
+          <h6 class="mb-3"><i class="bi bi-person-badge"></i> Profil artiste</h6>
+          
+          <div class="form-group">
+            <input type="text" name="nationalite" placeholder="Nationalité" class="form-control"
+                   value="{{ form.nationalite.value|default:'' }}">
+            {% if form.nationalite.errors %}<small class="error-text">{{ form.nationalite.errors }}</small>{% endif %}
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Date de naissance</label>
+            <input type="date" name="date_naissance" class="form-control"
+                   value="{{ form.date_naissance.value|default:'' }}">
+            {% if form.date_naissance.errors %}<small class="error-text">{{ form.date_naissance.errors }}</small>{% endif %}
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Biographie (optionnel)</label>
+            <textarea name="biographie" class="form-control" rows="3"
+                      placeholder="Parlez-nous de vous et de votre travail artistique...">{{ form.biographie.value|default:'' }}</textarea>
+            {% if form.biographie.errors %}<small class="error-text">{{ form.biographie.errors }}</small>{% endif %}
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-dark w-100 mt-4">S'inscrire</button>
+      </form>
+
+      <div class="footer-text mt-3">
+        <span>Déjà un compte ?</span>
+        <a href="{% url 'galerie:login' %}">Se connecter</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Afficher/masquer les champs artiste
+  (function () {
+    const cb = document.getElementById("is_artiste_check");
+    const box = document.getElementById("artisteFields");
+
+    function refresh() {
+      if (!cb || !box) return;
+      box.style.display = cb.checked ? "block" : "none";
+    }
+
+    if (cb) {
+      cb.addEventListener("change", refresh);
+      refresh(); // au chargement
+    }
+  })();
+</script>
+{% endblock %}

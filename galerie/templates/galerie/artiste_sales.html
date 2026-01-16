@@ -1,0 +1,398 @@
+{% extends 'galerie/base.html' %}
+{% load static %}
+
+{% block title %}Mes Ventes | GalerieVirtuelle{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'galerie/css/oeuvres.css' %}">
+<link rel="stylesheet" href="{% static 'galerie/css/expositions.css' %}">
+<link rel="stylesheet" href="{% static 'galerie/css/home.css' %}">
+<style>
+  :root {
+    --g1: #243748;
+    --g2: #4B749F;
+  }
+
+  /* Hero Section */
+  .sales-hero {
+    background: linear-gradient(90deg, var(--g1), var(--g2));
+    color: #fff;
+    border-radius: 18px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  .sales-hero h2 {
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .sales-hero p {
+    opacity: 0.9;
+    margin: 0;
+    font-size: 1.05rem;
+  }
+
+  /* Stats Grid */
+  .sales-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 1.8rem;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid var(--g2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.16);
+  }
+
+  .stat-card .stat-label {
+    color: #999;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .stat-card .stat-label i {
+    color: var(--g2);
+    font-size: 1.1rem;
+  }
+
+  .stat-card .stat-value {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--g1);
+  }
+
+  /* Table Section */
+  .sales-table-card {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .sales-table-card:hover {
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.16);
+  }
+
+  .sales-table-card .card-header {
+    background: linear-gradient(90deg, var(--g1), var(--g2));
+    color: #fff;
+    padding: 1.5rem;
+    border: none;
+  }
+
+  .sales-table-card .card-header h5 {
+    margin: 0;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    font-size: 1.3rem;
+  }
+
+  .sales-table-card .card-header i {
+    margin-right: 0.5rem;
+  }
+
+  .sales-table-card .table {
+    margin-bottom: 0;
+  }
+
+  .sales-table-card table thead {
+    background-color: #f8f9fa;
+  }
+
+  .sales-table-card table thead th {
+    border-bottom: 2px solid #e0e0e0;
+    color: var(--g1);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.6px;
+    padding: 1.2rem 1rem;
+  }
+
+  .sales-table-card table tbody td {
+    padding: 1.2rem 1rem;
+    vertical-align: middle;
+    border-color: #f0f0f0;
+    color: #333;
+  }
+
+  .sales-table-card table tbody tr {
+    transition: background-color 0.2s ease;
+  }
+
+  .sales-table-card table tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+
+  .sales-table-card table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* Links */
+  .artwork-link {
+    color: var(--g2);
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.2s ease;
+  }
+
+  .artwork-link:hover {
+    color: var(--g1);
+    text-decoration: underline;
+  }
+
+  /* Badges */
+  .sales-badge {
+    padding: 0.6rem 1rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .sales-badge-success {
+    background-color: #d4edda;
+    color: #155724;
+  }
+
+  .sales-badge-warning {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+
+  .sales-badge-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: #999;
+  }
+
+  .empty-state i {
+    font-size: 3.5rem;
+    color: #ddd;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .empty-state p {
+    margin: 0.5rem 0;
+  }
+
+  .empty-state p strong {
+    color: #333;
+    font-size: 1.2rem;
+  }
+
+  .empty-state p:last-child {
+    font-size: 0.9rem;
+    color: #999;
+  }
+
+  /* Back Button */
+  .btn-back {
+    background: linear-gradient(135deg, var(--g1), var(--g2));
+    color: #fff;
+    border-radius: 999px;
+    padding: 0.7rem 1.4rem;
+    text-decoration: none;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-back:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(36, 55, 72, 0.35);
+    color: #fff;
+  }
+
+  .btn-back i {
+    font-size: 0.95rem;
+  }
+
+  /* Add Artwork Button */
+  .btn-add-artwork {
+    background: linear-gradient(135deg, var(--g1), var(--g2));
+    color: #fff;
+    border-radius: 999px;
+    padding: 0.8rem 1.5rem;
+    text-decoration: none;
+    font-weight: 700;
+    display: inline-block;
+    margin-top: 1.5rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-add-artwork:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(36, 55, 72, 0.35);
+    color: #fff;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .sales-hero {
+      padding: 1.5rem;
+    }
+
+    .sales-hero h2 {
+      font-size: 1.8rem;
+    }
+
+    .stat-card {
+      padding: 1.2rem;
+    }
+
+    .stat-card .stat-value {
+      font-size: 1.8rem;
+    }
+
+    .sales-table-card table {
+      font-size: 0.85rem;
+    }
+
+    .sales-table-card table thead th,
+    .sales-table-card table tbody td {
+      padding: 0.8rem 0.5rem;
+    }
+
+    .sales-badge {
+      font-size: 0.75rem;
+      padding: 0.4rem 0.7rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <!-- Hero Section -->
+  <div class="sales-hero">
+    <h2><i class="bi bi-graph-up"></i> Mes Ventes</h2>
+    <p>Suivi de vos ventes et revenus</p>
+  </div>
+
+  <!-- Action Buttons -->
+  <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+    <a href="{% url 'galerie:artiste_dashboard' %}" class="btn-back">
+      <i class="bi bi-arrow-left"></i> Retour au dashboard
+    </a>
+    <a href="{% url 'galerie:oeuvre_create' %}" class="btn-back" style="background: linear-gradient(135deg, #28a745, #20c997);">
+      <i class="bi bi-plus-lg"></i> Ajouter une œuvre
+    </a>
+  </div>
+
+  <!-- Résumé des ventes -->
+  <div class="sales-stats">
+    <div class="stat-card">
+      <div class="stat-label"><i class="bi bi-cash-coin"></i> Total des ventes</div>
+      <div class="stat-value">{{ total_ventes|floatformat:2 }} €</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><i class="bi bi-bag-check"></i> Nombre de ventes</div>
+      <div class="stat-value">{{ ventes|length }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><i class="bi bi-check-circle"></i> Statut</div>
+      <div class="stat-value"><span class="sales-badge sales-badge-success"><i class="bi bi-check-circle-fill"></i> Actif</span></div>
+    </div>
+  </div>
+
+  <!-- Tableau des ventes -->
+  <div class="sales-table-card">
+    <div class="card-header">
+      <h5><i class="bi bi-table"></i> Historique des ventes</h5>
+    </div>
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Titre de l'œuvre</th>
+            <th>Quantité</th>
+            <th>Prix unitaire</th>
+            <th>Total</th>
+            <th>Date</th>
+            <th>Client</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for vente in ventes %}
+            <tr>
+              <td>
+                <a href="{% url 'galerie:oeuvre_detail' vente.oeuvre.pk %}" class="artwork-link">
+                  {{ vente.oeuvre.titre }}
+                </a>
+              </td>
+              <td><strong>{{ vente.quantite }}</strong></td>
+              <td>{{ vente.prix_unitaire|floatformat:2 }} €</td>
+              <td><strong>{{ vente.prix_unitaire|add:0|mul:vente.quantite|floatformat:2 }} €</strong></td>
+              <td>{{ vente.commande.date_commande|date:"d/m/Y" }}</td>
+              <td><strong>{{ vente.commande.client.username }}</strong></td>
+              <td>
+                {% if vente.commande.statut == 'completed' %}
+                  <span class="sales-badge sales-badge-success"><i class="bi bi-check-circle-fill"></i> Complétée</span>
+                {% elif vente.commande.statut == 'pending' %}
+                  <span class="sales-badge sales-badge-warning"><i class="bi bi-hourglass-split"></i> En attente</span>
+                {% elif vente.commande.statut == 'cancelled' %}
+                  <span class="sales-badge sales-badge-danger"><i class="bi bi-x-circle-fill"></i> Annulée</span>
+                {% else %}
+                  <span class="sales-badge" style="background-color: #e8e8e8; color: #555;"><i class="bi bi-question-circle"></i> {{ vente.commande.statut }}</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="7">
+                <div class="empty-state">
+                  <i class="bi bi-inbox"></i>
+                  <p><strong>Aucune vente pour le moment</strong></p>
+                  <p>Partagez vos œuvres pour commencer à vendre !</p>
+                  <a href="{% url 'galerie:oeuvre_create' %}" class="btn-add-artwork">
+                    <i class="bi bi-plus-lg"></i> Ajouter une œuvre
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

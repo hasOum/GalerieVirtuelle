@@ -1,0 +1,162 @@
+[
+  {
+    "model": "galerie.utilisateur",
+    "pk": 1,
+    "fields": {
+      "username": "pablo",
+      "password": "0000",
+      "email": "pablo@example.com",
+      "first_name": "Pablo",
+      "last_name": "Picasso",
+      "role": "artiste",
+      "telephone": "+212600000001",
+      "is_staff": false,
+      "is_superuser": false,
+      "date_inscription": "2026-01-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "galerie.utilisateur",
+    "pk": 2,
+    "fields": {
+      "username": "vincent",
+      "password": "0000",
+      "email": "vincent@example.com",
+      "first_name": "Vincent",
+      "last_name": "van Gogh",
+      "role": "artiste",
+      "telephone": "+212600000002",
+      "is_staff": false,
+      "is_superuser": false,
+      "date_inscription": "2026-01-01T10:05:00Z"
+    }
+  },
+  {
+    "model": "galerie.utilisateur",
+    "pk": 3,
+    "fields": {
+      "username": "leonardo",
+      "password": "0000",
+      "email": "leonardo@example.com",
+      "first_name": "Leonardo",
+      "last_name": "da Vinci",
+      "role": "artiste",
+      "telephone": "+212600000003",
+      "is_staff": false,
+      "is_superuser": false,
+      "date_inscription": "2026-01-01T10:10:00Z"
+    }
+  },
+  {
+    "model": "galerie.utilisateur",
+    "pk": 4,
+    "fields": {
+      "username": "michelangelo",
+      "password": "0000",
+      "email": "michelangelo@example.com",
+      "first_name": "Michelangelo",
+      "last_name": "Buonarroti",
+      "role": "artiste",
+      "telephone": "+212600000004",
+      "is_staff": false,
+      "is_superuser": false,
+      "date_inscription": "2026-01-01T10:15:00Z"
+    }
+  },
+  {
+    "model": "galerie.utilisateur",
+    "pk": 5,
+    "fields": {
+      "username": "frida",
+      "password": "0000",
+      "email": "frida@example.com",
+      "first_name": "Frida",
+      "last_name": "Kahlo",
+      "role": "artiste",
+      "telephone": "+212600000005",
+      "is_staff": false,
+      "is_superuser": false,
+      "date_inscription": "2026-01-01T10:20:00Z"
+    }
+  },
+  {
+    "model": "galerie.utilisateur",
+    "pk": 6,
+    "fields": {
+      "username": "claude",
+      "password": "0000",
+      "email": "claude@example.com",
+      "first_name": "Claude",
+      "last_name": "Monet",
+      "role": "artiste",
+      "telephone": "+212600000006",
+      "is_staff": false,
+      "is_superuser": false,
+      "date_inscription": "2026-01-01T10:25:00Z"
+    }
+  },
+  {
+    "model": "galerie.utilisateur",
+    "pk": 7,
+    "fields": {
+      "username": "salvador",
+      "password": "0000",
+      "email": "salvador@example.com",
+      "first_name": "Salvador",
+      "last_name": "Dalí",
+      "role": "artiste",
+      "telephone": "+212600000007",
+      "is_staff": false,
+      "is_superuser": false,
+      "date_inscription": "2026-01-01T10:30:00Z"
+    }
+  },
+  {
+    "model": "galerie.utilisateur",
+    "pk": 8,
+    "fields": {
+      "username": "andy",
+      "password": "0000",
+      "email": "andy@example.com",
+      "first_name": "Andy",
+      "last_name": "Warhol",
+      "role": "artiste",
+      "telephone": "+212600000008",
+      "is_staff": false,
+      "is_superuser": false,
+      "date_inscription": "2026-01-01T10:35:00Z"
+    }
+  },
+  {
+    "model": "galerie.utilisateur",
+    "pk": 9,
+    "fields": {
+      "username": "georgia",
+      "password": "0000",
+      "email": "georgia@example.com",
+      "first_name": "Georgia",
+      "last_name": "O’Keeffe",
+      "role": "artiste",
+      "telephone": "+212600000009",
+      "is_staff": false,
+      "is_superuser": false,
+      "date_inscription": "2026-01-01T10:40:00Z"
+    }
+  },
+  {
+    "model": "galerie.utilisateur",
+    "pk": 10,
+    "fields": {
+      "username": "jackson",
+      "password": "0000",
+      "email": "jackson@example.com",
+      "first_name": "Jackson",
+      "last_name": "Pollock",
+      "role": "artiste",
+      "telephone": "+212600000010",
+      "is_staff": false,
+      "is_superuser": false,
+      "date_inscription": "2026-01-01T10:45:00Z"
+    }
+  }
+]

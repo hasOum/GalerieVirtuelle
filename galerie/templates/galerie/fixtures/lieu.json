@@ -1,0 +1,52 @@
+[
+  {
+    "model": "galerie.lieu",
+    "pk": 1,
+    "fields": {
+      "nom_lieu": "Galerie Centrale",
+      "adresse": "12 Avenue Mohammed V",
+      "ville": "Rabat",
+      "pays": "Maroc"
+    }
+  },
+  {
+    "model": "galerie.lieu",
+    "pk": 2,
+    "fields": {
+      "nom_lieu": "Musée Mohammed VI d’Art Moderne",
+      "adresse": "Angle Avenue Moulay Hassan",
+      "ville": "Rabat",
+      "pays": "Maroc"
+    }
+  },
+  {
+    "model": "galerie.lieu",
+    "pk": 3,
+    "fields": {
+      "nom_lieu": "Galerie 38",
+      "adresse": "38 Rue Ahmed Chawki",
+      "ville": "Casablanca",
+      "pays": "Maroc"
+    }
+  },
+  {
+    "model": "galerie.lieu",
+    "pk": 4,
+    "fields": {
+      "nom_lieu": "MACAAL",
+      "adresse": "Route de l’Ourika",
+      "ville": "Marrakech",
+      "pays": "Maroc"
+    }
+  },
+  {
+    "model": "galerie.lieu",
+    "pk": 5,
+    "fields": {
+      "nom_lieu": "Institut Français",
+      "adresse": "Rue Abou Abbas Sebti",
+      "ville": "Tanger",
+      "pays": "Maroc"
+    }
+  }
+]

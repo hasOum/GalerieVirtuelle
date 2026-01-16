@@ -1,0 +1,156 @@
+{% extends 'galerie/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard | GalerieVirtuelle{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <h2 class="mb-3">Bienvenue {{ user.username }}</h2>
+
+  <!-- Search -->
+  <form method="get" class="row g-2 mb-4">
+    <div class="col-md-10">
+      <input class="form-control" type="text" name="q" placeholder="Rechercher une œuvre ou une exposition..." value="{{ q }}">
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-dark w-100">Rechercher</button>
+    </div>
+  </form>
+
+  <div class="row">
+    <!-- Œuvres -->
+    <div class="col-lg-7 mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h4 class="mb-0">Œuvres</h4>
+        <a class="btn btn-outline-dark btn-sm" href="{% url 'galerie:oeuvres_list' %}">Tout voir</a>
+      </div>
+
+      <div class="row">
+        {% for oeuvre in oeuvres %}
+          <div class="col-md-6 mb-3">
+            <div class="card h-100 shadow-sm">
+              <img src="{{ oeuvre.image.url }}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="{{ oeuvre.titre }}">
+              <div class="card-body">
+                <h6 class="card-title">{{ oeuvre.titre }}</h6>
+                <small class="text-muted">
+                  {% if oeuvre.categorie %}{{ oeuvre.categorie.nom_categorie }} • {% endif %}
+                  {{ oeuvre.artiste }}
+                </small>
+                <div class="mt-2">
+                  <a class="btn btn-sm btn-outline-dark" href="{% url 'galerie:oeuvre_detail' oeuvre.pk %}">Détails</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <p class="text-muted">Aucune œuvre trouvée.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Expositions -->
+    <div class="col-lg-5 mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h4 class="mb-0">Expositions</h4>
+        <a class="btn btn-outline-dark btn-sm" href="{% url 'galerie:expositions_list' %}">Tout voir</a>
+      </div>
+
+      <div class="list-group">
+        {% for expo in expositions %}
+          <a class="list-group-item list-group-item-action" href="{% url 'galerie:expositions_list' %}">
+            <div class="d-flex w-100 justify-content-between">
+              <h6 class="mb-1">{{ expo.nom_exposition }}</h6>
+              <small>{{ expo.date_debut|date:"d/m/Y" }}</small>
+            </div>{% extends 'galerie/base.html' %}
+{% load static %}
+{% block title %}Espace Client | GalerieVirtuelle{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-1">Espace Client</h2>
+  <p class="text-muted">Bienvenue, {{ user.username }}.</p>
+
+  <form method="get" action="{% url 'galerie:oeuvres_list' %}" class="row g-2 my-3">
+    <div class="col-md-10">
+      <input class="form-control" name="q" placeholder="Rechercher une œuvre..." />
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-dark w-100">Rechercher</button>
+    </div>
+  </form>
+
+  <div class="row g-3 mt-2">
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Consulter le panier</h5>
+          <p class="card-text">Voir les œuvres/expos ajoutées, modifier ou supprimer.</p>
+          <a class="btn btn-outline-dark btn-sm" href="{% url 'galerie:cart_detail' %}">Ouvrir le panier</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Passer commande</h5>
+          <p class="card-text">Créer une commande à partir du panier (inclut vérification stock).</p>
+          <a class="btn btn-dark btn-sm" href="{% url 'galerie:checkout' %}">Commander</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Payer une commande</h5>
+          <p class="card-text">Payer une commande “en attente”.</p>
+          <a class="btn btn-success btn-sm" href="{% url 'galerie:orders_list' %}">Mes commandes</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Historique des commandes</h5>
+          <p class="card-text">Consulter l’historique (inclut vérification quantités).</p>
+          <a class="btn btn-outline-dark btn-sm" href="{% url 'galerie:orders_list' %}">Voir l’historique</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card h-100 shadow-sm border-danger">
+        <div class="card-body">
+          <h5 class="card-title">Annuler une commande</h5>
+          <p class="card-text">Annuler une commande si son statut le permet (inclut vérification statut).</p>
+          <a class="btn btn-outline-danger btn-sm" href="{% url 'galerie:orders_list' %}">Annuler depuis mes commandes</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="my-4">
+
+  <h5>Accès rapide</h5>
+  <a class="btn btn-outline-dark btn-sm" href="{% url 'galerie:oeuvres_list' %}">Consulter les œuvres</a>
+  <a class="btn btn-outline-dark btn-sm" href="{% url 'galerie:expositions_list' %}">Consulter les expositions</a>
+</div>
+{% endblock %}
+
+            <p class="mb-1 text-muted">{{ expo.description|truncatewords:18 }}</p>
+            {% if expo.lieu %}
+              <small class="text-muted">Lieu: {{ expo.lieu }}</small>
+            {% endif %}
+          </a>
+        {% empty %}
+          <p class="text-muted mt-2">Aucune exposition trouvée.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "galerie/base.html" %}
+{% block content %}
+<div class="container" style="max-width: 520px; margin-top: 40px;">
+  <h2>Déconnexion</h2>
+  <p>Vous êtes déconnecté(e) avec succès.</p>
+
+  <a class="btn btn-dark" href="{% url 'galeriehome' %}">Retour à l'accueil</a>
+  <a class="btn btn-outline-secondary" href="{% url 'login' %}">Se connecter</a>
+</div>
+{% endblock %}

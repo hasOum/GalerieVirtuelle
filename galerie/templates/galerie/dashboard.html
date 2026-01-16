@@ -1,0 +1,56 @@
+{% extends 'galerie/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard | GalerieVirtuelle{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-3">Bienvenue, {{ user.username }}</h2>
+
+  <div class="row g-3">
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Catalogue</h5>
+          <p class="card-text">Explorer toutes les œuvres validées.</p>
+          <a href="{% url 'galerie:oeuvres_list' %}" class="btn btn-outline-dark btn-sm">Voir les œuvres</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Expositions</h5>
+          <p class="card-text">Voir les expositions disponibles.</p>
+          <a href="{% url 'galerie:expositions_list' %}" class="btn btn-outline-dark btn-sm">Voir les expositions</a>
+        </div>
+      </div>
+    </div>
+
+    {% if user.is_staff %}
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-warning">
+        <div class="card-body">
+          <h5 class="card-title">Admin</h5>
+          <p class="card-text">Valider/refuser les œuvres en attente.</p>
+          <a href="{% url 'galerie:admin_dashboard' %}" class="btn btn-warning btn-sm">Ouvrir dashboard admin</a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if user.is_authenticated and user.artiste %}
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-primary">
+        <div class="card-body">
+          <h5 class="card-title">Espace artiste</h5>
+          <p class="card-text">Gérer tes œuvres et en soumettre une nouvelle.</p>
+          <a href="{% url 'galerie:artiste_dashboard' %}" class="btn btn-primary btn-sm">Mon espace artiste</a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
