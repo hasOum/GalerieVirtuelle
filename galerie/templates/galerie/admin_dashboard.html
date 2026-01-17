@@ -1,39 +1,247 @@
 {% extends 'galerie/base.html' %}
+{% load static %}
 {% block title %}Admin Dashboard | GalerieVirtuelle{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'galerie/css/oeuvres.css' %}">
+<style>
+  :root {
+    --g1: #243748;
+    --g2: #4B749F;
+  }
+
+  .admin-hero {
+    background: linear-gradient(90deg, var(--g1), var(--g2));
+    color: #fff;
+    border-radius: 18px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  .admin-hero h2 {
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .admin-hero p {
+    opacity: 0.9;
+    margin: 0;
+  }
+
+  .admin-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .admin-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 1.8rem;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid var(--g2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .admin-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.16);
+  }
+
+  .admin-card-icon {
+    font-size: 2.5rem;
+    color: var(--g2);
+    margin-bottom: 0.75rem;
+  }
+
+  .admin-card h5 {
+    font-weight: 800;
+    color: var(--g1);
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+  }
+
+  .admin-card p {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  .btn-admin {
+    background: linear-gradient(135deg, var(--g1), var(--g2));
+    color: #fff;
+    border-radius: 999px;
+    padding: 0.6rem 1.2rem;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-admin:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(36, 55, 72, 0.35);
+    color: #fff;
+    text-decoration: none;
+  }
+
+  @media (max-width: 768px) {
+    .admin-hero {
+      padding: 1.5rem;
+    }
+
+    .admin-hero h2 {
+      font-size: 1.8rem;
+    }
+
+    .admin-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-  <h2 class="mb-3">Dashboard Admin</h2>
+<div class="container my-5">
+  <!-- Hero Section -->
+  <div class="admin-hero">
+    <h2><i class="bi bi-shield-check"></i> Dashboard Admin</h2>
+    <p>Gérez la plateforme GalerieVirtuelle</p>
+  </div>
 
-  <div class="row g-3">
-    <div class="col-md-4">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Gestion Artistes</h5>
-          <p class="card-text">Créer / modifier / supprimer des artistes.</p>
-          <a class="btn btn-dark btn-sm" href="{% url 'admin:galerie_artiste_changelist' %}">Ouvrir dans Admin Django</a>
-        </div>
+  <!-- Admin Cards -->
+  <div class="admin-cards">
+    <!-- Gestion Artistes -->
+    <div class="admin-card">
+      <div class="admin-card-icon">
+        <i class="bi bi-palette-fill"></i>
       </div>
+      <h5>Gestion Artistes</h5>
+      <p>Créer, modifier ou supprimer les profils artistes et gérer leurs informations.</p>
+      <a class="btn-admin" href="{% url 'admin:galerie_artiste_changelist' %}">
+        <i class="bi bi-pencil-square"></i> Gérer
+      </a>
     </div>
 
-    <div class="col-md-4">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Validation œuvres</h5>
-          <p class="card-text">Valider/refuser les œuvres en attente.</p>
-          <a class="btn btn-outline-dark btn-sm" href="{% url 'galerie:admin_validation_list' %}">Voir les œuvres en attente</a>
-        </div>
+    <!-- Validation Œuvres -->
+    <div class="admin-card">
+      <div class="admin-card-icon">
+        <i class="bi bi-check-circle"></i>
       </div>
+      <h5>Validation Œuvres</h5>
+      <p>Valider ou refuser les œuvres en attente de validation soumises par les artistes.</p>
+      <a class="btn-admin" href="{% url 'galerie:admin_validation_list' %}">
+        <i class="bi bi-list-check"></i> Valider
+      </a>
     </div>
 
-    <div class="col-md-4">
-      <div class="card h-100 shadow-sm border-danger">
-        <div class="card-body">
-          <h5 class="card-title">Annulations commandes</h5>
-          <p class="card-text">Règlement des demandes d’annulation.</p>
-          <a class="btn btn-outline-danger btn-sm" href="{% url 'galerie:admin_cancellations' %}">Gérer annulations</a>
-        </div>
+    <!-- Gestion Utilisateurs -->
+    <div class="admin-card">
+      <div class="admin-card-icon">
+        <i class="bi bi-people-fill"></i>
       </div>
+      <h5>Gestion Utilisateurs</h5>
+      <p>Gérer les comptes utilisateurs, les permissions et les rôles sur la plateforme.</p>
+      <a class="btn-admin" href="{% url 'admin:galerie_utilisateur_changelist' %}">
+        <i class="bi bi-gear"></i> Gérer
+      </a>
+    </div>
+
+    <!-- Gestion Commandes -->
+    <div class="admin-card">
+      <div class="admin-card-icon">
+        <i class="bi bi-box-seam"></i>
+      </div>
+      <h5>Gestion Commandes</h5>
+      <p>Consulter et gérer toutes les commandes passées par les clients sur la plateforme.</p>
+      <a class="btn-admin" href="{% url 'admin:galerie_commande_changelist' %}">
+        <i class="bi bi-receipt"></i> Consulter
+      </a>
+    </div>
+
+    <!-- Gestion Catégories -->
+    <div class="admin-card">
+      <div class="admin-card-icon">
+        <i class="bi bi-tags-fill"></i>
+      </div>
+      <h5>Gestion Catégories</h5>
+      <p>Créer et gérer les catégories d'œuvres disponibles sur la plateforme.</p>
+      <a class="btn-admin" href="{% url 'admin:galerie_categorie_changelist' %}">
+        <i class="bi bi-pencil-square"></i> Gérer
+      </a>
+    </div>
+
+    <!-- Gestion Paiements -->
+    <div class="admin-card">
+      <div class="admin-card-icon">
+        <i class="bi bi-credit-card"></i>
+      </div>
+      <h5>Gestion Paiements</h5>
+      <p>Consulter l'historique des paiements et gérer les transactions effectuées.</p>
+      <a class="btn-admin" href="{% url 'admin:galerie_paiement_changelist' %}">
+        <i class="bi bi-receipt"></i> Consulter
+      </a>
+    </div>
+
+    <!-- Gestion Expositions -->
+    <div class="admin-card">
+      <div class="admin-card-icon">
+        <i class="bi bi-calendar-event"></i>
+      </div>
+      <h5>Gestion Expositions</h5>
+      <p>Créer et gérer les expositions virtuelles sur la plateforme.</p>
+      <a class="btn-admin" href="{% url 'admin:galerie_exposition_changelist' %}">
+        <i class="bi bi-pencil-square"></i> Gérer
+      </a>
+    </div>
+
+    <!-- Gestion Lieux -->
+    <div class="admin-card">
+      <div class="admin-card-icon">
+        <i class="bi bi-geo-alt-fill"></i>
+      </div>
+      <h5>Gestion Lieux</h5>
+      <p>Créer et gérer les lieux d'exposition (galeries, musées, etc.).</p>
+      <a class="btn-admin" href="{% url 'admin:galerie_lieu_changelist' %}">
+        <i class="bi bi-pencil-square"></i> Gérer
+      </a>
+    </div>
+
+    <!-- Admin Django -->
+    <div class="admin-card">
+      <div class="admin-card-icon">
+        <i class="bi bi-sliders"></i>
+      </div>
+      <h5>Panel Django Admin</h5>
+      <p>Accès complet au panel d'administration Django avec toutes les options disponibles.</p>
+      <a class="btn-admin" href="{% url 'admin:index' %}">
+        <i class="bi bi-arrow-right"></i> Accéder
+      </a>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 2px solid #f0f0f0;">
+    <h4 style="color: var(--g1); font-weight: 800; margin-bottom: 1.5rem;">Actions Rapides</h4>
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+      <a href="{% url 'galerie:home' %}" class="btn-admin">
+        <i class="bi bi-house"></i> Accueil
+      </a>
+      <a href="/admin/" class="btn-admin">
+        <i class="bi bi-gear"></i> Admin Django
+      </a>
     </div>
   </div>
 </div>

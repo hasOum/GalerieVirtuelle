@@ -63,5 +63,96 @@
       "affiche": "expositions/matiere_relief.jpg",
       "oeuvres": [3, 4, 6, 10]
     }
+  },
+  {
+    "model": "galerie.exposition",
+    "pk": 6,
+    "fields": {
+      "nom_exposition": "Harmonie Urbaine",
+      "description": "La ville à travers des yeux sensibles et créatifs.",
+      "date_debut": "2026-07-10",
+      "date_fin": "2026-08-01",
+      "lieu": null,
+      "affiche": "expositions/harmonie_urbaine.jpg",
+      "oeuvres": [11, 12, 13]
+    }
+  },
+  {
+    "model": "galerie.exposition",
+    "pk": 7,
+    "fields": {
+      "nom_exposition": "Limites Fragmentées",
+      "description": "Exploration conceptuelle des frontières visuelles et mentales.",
+      "date_debut": "2026-08-05",
+      "date_fin": "2026-08-25",
+      "lieu": null,
+      "affiche": "expositions/limites_fragmentees.jpg",
+      "oeuvres": [14, 15, 2]
+    }
+  },
+  {
+    "model": "galerie.exposition",
+    "pk": 8,
+    "fields": {
+      "nom_exposition": "Nuits Brillantes",
+      "description": "Installations et œuvres jouant avec la lumière et l'obscurité.",
+      "date_debut": "2026-09-01",
+      "date_fin": "2026-09-20",
+      "lieu": null,
+      "affiche": "expositions/nuits_brillantes.jpg",
+      "oeuvres": [16, 7, 17]
+    }
+  },
+  {
+    "model": "galerie.exposition",
+    "pk": 9,
+    "fields": {
+      "nom_exposition": "Échos de la Nature",
+      "description": "L'art en dialogue avec les éléments naturels.",
+      "date_debut": "2026-09-25",
+      "date_fin": "2026-10-15",
+      "lieu": null,
+      "affiche": "expositions/echos_nature.jpg",
+      "oeuvres": [18, 19, 5]
+    }
+  },
+  {
+    "model": "galerie.exposition",
+    "pk": 10,
+    "fields": {
+      "nom_exposition": "Transformations",
+      "description": "Voyage à travers la métamorphose et les cycles de vie.",
+      "date_debut": "2026-10-20",
+      "date_fin": "2026-11-10",
+      "lieu": null,
+      "affiche": "expositions/transformations.jpg",
+      "oeuvres": [20, 9, 12]
+    }
+  },
+  {
+    "model": "galerie.exposition",
+    "pk": 11,
+    "fields": {
+      "nom_exposition": "Printemps des Créateurs",
+      "description": "Célébration du renouveau artistique et de la création.",
+      "date_debut": "2026-11-15",
+      "date_fin": "2026-12-05",
+      "lieu": null,
+      "affiche": "expositions/printemps_createurs.jpg",
+      "oeuvres": [1, 6, 14, 18]
+    }
+  },
+  {
+    "model": "galerie.exposition",
+    "pk": 12,
+    "fields": {
+      "nom_exposition": "Réflexions Hivernales",
+      "description": "Sérénité et introspection en période froide.",
+      "date_debut": "2026-12-10",
+      "date_fin": "2027-01-05",
+      "lieu": null,
+      "affiche": "expositions/reflexions_hivernales.jpg",
+      "oeuvres": [4, 10, 15, 17]
+    }
   }
 ]

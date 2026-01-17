@@ -1,156 +1,235 @@
 {% extends 'galerie/base.html' %}
 {% load static %}
 
-{% block title %}Dashboard | GalerieVirtuelle{% endblock %}
-
-{% block content %}
-<div class="container mt-4">
-
-  <h2 class="mb-3">Bienvenue {{ user.username }}</h2>
-
-  <!-- Search -->
-  <form method="get" class="row g-2 mb-4">
-    <div class="col-md-10">
-      <input class="form-control" type="text" name="q" placeholder="Rechercher une œuvre ou une exposition..." value="{{ q }}">
-    </div>
-    <div class="col-md-2">
-      <button class="btn btn-dark w-100">Rechercher</button>
-    </div>
-  </form>
-
-  <div class="row">
-    <!-- Œuvres -->
-    <div class="col-lg-7 mb-4">
-      <div class="d-flex justify-content-between align-items-center mb-2">
-        <h4 class="mb-0">Œuvres</h4>
-        <a class="btn btn-outline-dark btn-sm" href="{% url 'galerie:oeuvres_list' %}">Tout voir</a>
-      </div>
-
-      <div class="row">
-        {% for oeuvre in oeuvres %}
-          <div class="col-md-6 mb-3">
-            <div class="card h-100 shadow-sm">
-              <img src="{{ oeuvre.image.url }}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="{{ oeuvre.titre }}">
-              <div class="card-body">
-                <h6 class="card-title">{{ oeuvre.titre }}</h6>
-                <small class="text-muted">
-                  {% if oeuvre.categorie %}{{ oeuvre.categorie.nom_categorie }} • {% endif %}
-                  {{ oeuvre.artiste }}
-                </small>
-                <div class="mt-2">
-                  <a class="btn btn-sm btn-outline-dark" href="{% url 'galerie:oeuvre_detail' oeuvre.pk %}">Détails</a>
-                </div>
-              </div>
-            </div>
-          </div>
-        {% empty %}
-          <p class="text-muted">Aucune œuvre trouvée.</p>
-        {% endfor %}
-      </div>
-    </div>
-
-    <!-- Expositions -->
-    <div class="col-lg-5 mb-4">
-      <div class="d-flex justify-content-between align-items-center mb-2">
-        <h4 class="mb-0">Expositions</h4>
-        <a class="btn btn-outline-dark btn-sm" href="{% url 'galerie:expositions_list' %}">Tout voir</a>
-      </div>
-
-      <div class="list-group">
-        {% for expo in expositions %}
-          <a class="list-group-item list-group-item-action" href="{% url 'galerie:expositions_list' %}">
-            <div class="d-flex w-100 justify-content-between">
-              <h6 class="mb-1">{{ expo.nom_exposition }}</h6>
-              <small>{{ expo.date_debut|date:"d/m/Y" }}</small>
-            </div>{% extends 'galerie/base.html' %}
-{% load static %}
 {% block title %}Espace Client | GalerieVirtuelle{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-  <h2 class="mb-1">Espace Client</h2>
-  <p class="text-muted">Bienvenue, {{ user.username }}.</p>
+<link rel="stylesheet" href="{% static 'galerie/css/main.css' %}">
 
-  <form method="get" action="{% url 'galerie:oeuvres_list' %}" class="row g-2 my-3">
-    <div class="col-md-10">
-      <input class="form-control" name="q" placeholder="Rechercher une œuvre..." />
-    </div>
-    <div class="col-md-2">
-      <button class="btn btn-dark w-100">Rechercher</button>
-    </div>
-  </form>
+<div class="container py-4">
 
-  <div class="row g-3 mt-2">
-    <div class="col-md-4">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Consulter le panier</h5>
-          <p class="card-text">Voir les œuvres/expos ajoutées, modifier ou supprimer.</p>
-          <a class="btn btn-outline-dark btn-sm" href="{% url 'galerie:cart_detail' %}">Ouvrir le panier</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-4">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Passer commande</h5>
-          <p class="card-text">Créer une commande à partir du panier (inclut vérification stock).</p>
-          <a class="btn btn-dark btn-sm" href="{% url 'galerie:checkout' %}">Commander</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-4">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Payer une commande</h5>
-          <p class="card-text">Payer une commande “en attente”.</p>
-          <a class="btn btn-success btn-sm" href="{% url 'galerie:orders_list' %}">Mes commandes</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-6">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Historique des commandes</h5>
-          <p class="card-text">Consulter l’historique (inclut vérification quantités).</p>
-          <a class="btn btn-outline-dark btn-sm" href="{% url 'galerie:orders_list' %}">Voir l’historique</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-6">
-      <div class="card h-100 shadow-sm border-danger">
-        <div class="card-body">
-          <h5 class="card-title">Annuler une commande</h5>
-          <p class="card-text">Annuler une commande si son statut le permet (inclut vérification statut).</p>
-          <a class="btn btn-outline-danger btn-sm" href="{% url 'galerie:orders_list' %}">Annuler depuis mes commandes</a>
-        </div>
-      </div>
+  <!-- HERO HEADER -->
+  <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-5">
+    <div>
+      <h1 style="font-size: 2.5rem; color: #243748; font-weight: 700; margin-bottom: 0.5rem;">Espace Client</h1>
+      <p style="color: #666; font-size: 1.1rem;">Bienvenue, <span style="color: #4B749F; font-weight: 600;">{{ user.username }}</span></p>
     </div>
   </div>
 
-  <hr class="my-4">
+  <!-- SEARCH SECTION -->
+  <div style="background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%); border-radius: 12px; padding: 2rem; margin-bottom: 3rem; border-left: 4px solid #4B749F;">
+    <form method="get" class="row g-3 align-items-end">
+      <div class="col-md-9">
+        <label class="form-label" style="font-weight: 600; color: #243748; margin-bottom: 0.5rem;">Rechercher</label>
+        <input class="form-control" type="text" name="q" 
+               placeholder="Tapez une œuvre, une exposition, un artiste..." 
+               value="{{ q }}"
+               style="border-radius: 8px; border: 2px solid #ddd; padding: 0.75rem; font-size: 1rem;">
+      </div>
+      <div class="col-md-3">
+        <button type="submit" class="btn w-100" style="background: linear-gradient(135deg, #4B749F 0%, #243748 100%); color: white; padding: 0.75rem; border-radius: 8px; font-weight: 600; border: none; transition: all 0.3s ease;">
+          Rechercher
+        </button>
+      </div>
+    </form>
+  </div>
 
-  <h5>Accès rapide</h5>
-  <a class="btn btn-outline-dark btn-sm" href="{% url 'galerie:oeuvres_list' %}">Consulter les œuvres</a>
-  <a class="btn btn-outline-dark btn-sm" href="{% url 'galerie:expositions_list' %}">Consulter les expositions</a>
-</div>
-{% endblock %}
-
-            <p class="mb-1 text-muted">{{ expo.description|truncatewords:18 }}</p>
-            {% if expo.lieu %}
-              <small class="text-muted">Lieu: {{ expo.lieu }}</small>
-            {% endif %}
+  <!-- TWO COLUMN LAYOUT -->
+  <div class="row gap-4 mb-5">
+    
+    <!-- LEFT: OEUVRES -->
+    <div class="col-lg-8">
+      <div style="margin-bottom: 2rem;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 style="color: #243748; font-weight: 700; font-size: 1.5rem; margin: 0;">Œuvres Récentes</h2>
+          <a href="{% url 'galerie:oeuvres_list' %}" style="color: #4B749F; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+            Voir tout
+            <i class="bi bi-arrow-right"></i>
           </a>
-        {% empty %}
-          <p class="text-muted mt-2">Aucune exposition trouvée.</p>
-        {% endfor %}
+        </div>
+
+        <div class="row g-3">
+          {% for oeuvre in oeuvres %}
+            <div class="col-md-6">
+              <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); transition: all 0.3s ease; border: 2px solid transparent;">
+                <div style="position: relative; height: 200px; overflow: hidden; background: #f5f5f5;">
+                  {% if oeuvre.image %}
+                    <img src="{{ oeuvre.image.url }}" alt="{{ oeuvre.titre }}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+                  {% else %}
+                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #e9ecef; color: #999;">
+                      <i class="bi bi-image" style="font-size: 2rem;"></i>
+                    </div>
+                  {% endif %}
+                  {% if oeuvre.prix %}
+                    <div style="position: absolute; top: 10px; right: 10px; background: linear-gradient(135deg, #FF6B6B 0%, #ee5a52 100%); color: white; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 700;">
+                      {{ oeuvre.prix|floatformat:0 }}€
+                    </div>
+                  {% endif %}
+                </div>
+                <div style="padding: 1rem;">
+                  <h5 style="color: #243748; font-weight: 700; margin-bottom: 0.5rem; font-size: 1rem;">{{ oeuvre.titre }}</h5>
+                  <small style="color: #999; display: block; margin-bottom: 0.75rem;">
+                    {% if oeuvre.categorie %}<span style="color: #4B749F; font-weight: 600;">{{ oeuvre.categorie.nom_categorie }}</span> • {% endif %}
+                    {{ oeuvre.artiste }}
+                  </small>
+                  <a href="{% url 'galerie:oeuvre_detail' oeuvre.pk %}" class="btn btn-sm" style="width: 100%; background: linear-gradient(135deg, #4B749F 0%, #243748 100%); color: white; border: none; border-radius: 6px; font-weight: 600;">
+                    Voir détails
+                  </a>
+                </div>
+              </div>
+            </div>
+          {% empty %}
+            <div class="col-12">
+              <div style="text-align: center; padding: 2rem; color: #999;">
+                <i class="bi bi-inbox" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                <p>Aucune œuvre trouvée</p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: EXPOSITIONS -->
+    <div class="col-lg-4">
+      <div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 style="color: #243748; font-weight: 700; font-size: 1.5rem; margin: 0;">Expositions</h2>
+          <a href="{% url 'galerie:expositions_list' %}" style="color: #4B749F; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+            Voir tout
+            <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          {% for expo in expositions %}
+            <a href="{% url 'galerie:expositions_list' %}" style="text-decoration: none; color: inherit; display: block; background: white; border-radius: 12px; padding: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.3s ease; border-left: 4px solid #4B749F;">
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                <h5 style="color: #243748; font-weight: 700; margin: 0; font-size: 1rem;">{{ expo.nom_exposition }}</h5>
+                <span style="background: #F0F4F8; color: #4B749F; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; white-space: nowrap;">
+                  {{ expo.date_debut|date:"d/m/Y" }}
+                </span>
+              </div>
+              <p style="color: #666; font-size: 0.9rem; margin: 0.5rem 0;">{{ expo.description|truncatewords:15 }}</p>
+              {% if expo.lieu %}
+                <small style="color: #999;">📍 {{ expo.lieu }}</small>
+              {% endif %}
+            </a>
+          {% empty %}
+            <div style="text-align: center; padding: 2rem; color: #999; background: #f5f5f5; border-radius: 12px;">
+              <i class="bi bi-calendar" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+              <p style="margin: 0;">Aucune exposition</p>
+            </div>
+          {% endfor %}
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- QUICK ACTIONS SECTION -->
+  <div style="margin-top: 4rem;">
+    <h2 style="color: #243748; font-weight: 700; font-size: 1.5rem; margin-bottom: 2rem;">Actions Rapides</h2>
+    
+    <div class="row g-3">
+      <!-- Cart -->
+      <div class="col-md-6 col-lg-3">
+        <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.08); transition: all 0.3s ease; border: 2px solid transparent; text-align: center; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 20px rgba(75, 116, 159, 0.15)'; this.style.borderColor='#4B749F'" onmouseout="this.style.boxShadow='0 2px 12px rgba(0,0,0,0.08)'; this.style.borderColor='transparent'">
+          <i class="bi bi-cart" style="font-size: 2.5rem; color: #4B749F; margin-bottom: 1rem;"></i>
+          <h5 style="color: #243748; font-weight: 700; margin-bottom: 0.5rem;">Mon Panier</h5>
+          <p style="color: #999; font-size: 0.9rem; margin-bottom: 1rem;">Voir et gérer vos articles</p>
+          <a href="{% url 'galerie:cart_detail' %}" class="btn" style="width: 100%; background: linear-gradient(135deg, #4B749F 0%, #243748 100%); color: white; border: none; border-radius: 6px; font-weight: 600;">
+            Ouvrir
+          </a>
+        </div>
+      </div>
+
+      <!-- Checkout -->
+      <div class="col-md-6 col-lg-3">
+        <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.08); transition: all 0.3s ease; border: 2px solid transparent; text-align: center; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 20px rgba(75, 116, 159, 0.15)'; this.style.borderColor='#4B749F'" onmouseout="this.style.boxShadow='0 2px 12px rgba(0,0,0,0.08)'; this.style.borderColor='transparent'">
+          <i class="bi bi-credit-card" style="font-size: 2.5rem; color: #FF6B6B; margin-bottom: 1rem;"></i>
+          <h5 style="color: #243748; font-weight: 700; margin-bottom: 0.5rem;">Commander</h5>
+          <p style="color: #999; font-size: 0.9rem; margin-bottom: 1rem;">Créer une commande</p>
+          <a href="{% url 'galerie:checkout' %}" class="btn" style="width: 100%; background: linear-gradient(135deg, #FF6B6B 0%, #ee5a52 100%); color: white; border: none; border-radius: 6px; font-weight: 600;">
+            Procéder
+          </a>
+        </div>
+      </div>
+
+      <!-- Orders -->
+      <div class="col-md-6 col-lg-3">
+        <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.08); transition: all 0.3s ease; border: 2px solid transparent; text-align: center; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 20px rgba(75, 116, 159, 0.15)'; this.style.borderColor='#4B749F'" onmouseout="this.style.boxShadow='0 2px 12px rgba(0,0,0,0.08)'; this.style.borderColor='transparent'">
+          <i class="bi bi-bag-check" style="font-size: 2.5rem; color: #4CAF50; margin-bottom: 1rem;"></i>
+          <h5 style="color: #243748; font-weight: 700; margin-bottom: 0.5rem;">Mes Commandes</h5>
+          <p style="color: #999; font-size: 0.9rem; margin-bottom: 1rem;">Historique & paiements</p>
+          <a href="{% url 'galerie:orders_list' %}" class="btn" style="width: 100%; background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; border: none; border-radius: 6px; font-weight: 600;">
+            Voir
+          </a>
+        </div>
+      </div>
+
+      <!-- Browse -->
+      <div class="col-md-6 col-lg-3">
+        <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.08); transition: all 0.3s ease; border: 2px solid transparent; text-align: center; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 20px rgba(75, 116, 159, 0.15)'; this.style.borderColor='#4B749F'" onmouseout="this.style.boxShadow='0 2px 12px rgba(0,0,0,0.08)'; this.style.borderColor='transparent'">
+          <i class="bi bi-search" style="font-size: 2.5rem; color: #2196F3; margin-bottom: 1rem;"></i>
+          <h5 style="color: #243748; font-weight: 700; margin-bottom: 0.5rem;">Explorer</h5>
+          <p style="color: #999; font-size: 0.9rem; margin-bottom: 1rem;">Découvrir toutes les œuvres</p>
+          <a href="{% url 'galerie:oeuvres_list' %}" class="btn" style="width: 100%; background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); color: white; border: none; border-radius: 6px; font-weight: 600;">
+            Parcourir
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACCOUNT SECTION - Only for clients -->
+  {% if user.is_authenticated and not user.artiste %}
+  <div style="margin-top: 4rem;">
+    <h2 style="color: #243748; font-weight: 700; font-size: 1.5rem; margin-bottom: 2rem;">Espace Client</h2>
+    
+    <div class="row g-3">
+      <!-- Mon Espace Artiste (si artiste) -->
+      {% if user.is_authenticated and user.artiste and not user.is_staff %}
+      <div class="col-md-6 col-lg-3">
+        <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.08); transition: all 0.3s ease; border: 2px solid transparent; text-align: center; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 20px rgba(75, 116, 159, 0.15)'; this.style.borderColor='#4B749F'" onmouseout="this.style.boxShadow='0 2px 12px rgba(0,0,0,0.08)'; this.style.borderColor='transparent'">
+          <i class="bi bi-palette" style="font-size: 2.5rem; color: #9C27B0; margin-bottom: 1rem;"></i>
+          <h5 style="color: #243748; font-weight: 700; margin-bottom: 0.5rem;">Mon Espace Artiste</h5>
+          <p style="color: #999; font-size: 0.9rem; margin-bottom: 1rem;">Gérer vos œuvres et ventes</p>
+          <a href="{% url 'galerie:artiste_dashboard' %}" class="btn" style="width: 100%; background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%); color: white; border: none; border-radius: 6px; font-weight: 600;">
+            Accéder
+          </a>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Profile -->
+      <div class="col-md-6 col-lg-3">
+        <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.08); transition: all 0.3s ease; border: 2px solid transparent; text-align: center; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 20px rgba(75, 116, 159, 0.15)'; this.style.borderColor='#4B749F'" onmouseout="this.style.boxShadow='0 2px 12px rgba(0,0,0,0.08)'; this.style.borderColor='transparent'">
+          <i class="bi bi-person-circle" style="font-size: 2.5rem; color: #4B749F; margin-bottom: 1rem;"></i>
+          <h5 style="color: #243748; font-weight: 700; margin-bottom: 0.5rem;">Mon Profil</h5>
+          <p style="color: #999; font-size: 0.9rem; margin-bottom: 1rem;">Gérer vos informations personnelles</p>
+          <a href="{% url 'galerie:profile_edit' %}" class="btn" style="width: 100%; background: linear-gradient(135deg, #4B749F 0%, #243748 100%); color: white; border: none; border-radius: 6px; font-weight: 600;">
+            Éditer
+          </a>
+        </div>
+      </div>
+
+      <!-- Logout -->
+      <div class="col-md-6 col-lg-3">
+        <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.08); transition: all 0.3s ease; border: 2px solid transparent; text-align: center; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 20px rgba(255, 107, 107, 0.15)'; this.style.borderColor='#FF6B6B'" onmouseout="this.style.boxShadow='0 2px 12px rgba(0,0,0,0.08)'; this.style.borderColor='transparent'">
+          <i class="bi bi-box-arrow-right" style="font-size: 2.5rem; color: #FF6B6B; margin-bottom: 1rem;"></i>
+          <h5 style="color: #243748; font-weight: 700; margin-bottom: 0.5rem;">Déconnexion</h5>
+          <p style="color: #999; font-size: 0.9rem; margin-bottom: 1rem;">Se déconnecter de votre compte</p>
+          <form method="post" action="{% url 'galerie:logout' %}?next={% url 'galerie:home' %}" style="display: block;">
+            {% csrf_token %}
+            <button type="submit" class="btn" style="width: 100%; background: linear-gradient(135deg, #FF6B6B 0%, #ee5a52 100%); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">
+              Logout
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
 
 </div>
 {% endblock %}

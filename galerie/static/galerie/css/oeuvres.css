@@ -85,17 +85,53 @@
   background: #f2f4f7;
 }
 
-/* Badge */
-.oeuvre-badge{
+/* Badges Container */
+.oeuvre-badges-left {
   position: absolute;
   top: 12px;
   left: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 2;
+}
+
+/* Badge */
+.oeuvre-badge{
   padding: .45rem .7rem;
   border-radius: 999px;
   background: rgba(255,255,255,0.92);
   border: 1px solid rgba(36,55,72,0.15);
   font-weight: 800;
   color: #111;
+  font-size: 0.85rem;
+}
+
+/* Price Badge Left */
+.oeuvre-price-badge-left {
+  padding: .55rem .8rem;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #4B749F, #243748);
+  border: none;
+  font-weight: 800;
+  color: #fff;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 12px rgba(36, 55, 72, 0.3);
+}
+
+/* Price Badge */
+.oeuvre-price-badge{
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: .6rem .85rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #FF6B6B, #FF5252);
+  border: none;
+  font-weight: 800;
+  color: #fff;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
 }
 
 /* Body */
@@ -139,6 +175,109 @@
   font-size: .75rem;
   text-transform: uppercase;
   letter-spacing: .06em;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.oeuvre-meta-value{
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #111;
+}
+
+/* Payment Section */
+.oeuvre-payment {
+  padding: 1rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 14px;
+  border: 1px solid rgba(75, 116, 159, 0.1);
+}
+
+.oeuvre-price-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 0;
+  border-bottom: 2px solid rgba(75, 116, 159, 0.15);
+  margin-bottom: 0.8rem;
+}
+
+.oeuvre-price-label {
+  font-weight: 600;
+  color: #243748;
+  font-size: 0.95rem;
+}
+
+.oeuvre-price-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #FF6B6B;
+  background: linear-gradient(135deg, #FF6B6B, #FF5252);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.oeuvre-stock-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0;
+  margin-bottom: 1rem;
+}
+
+.oeuvre-stock-label {
+  font-weight: 600;
+  color: #243748;
+  font-size: 0.9rem;
+}
+
+.oeuvre-stock-available {
+  color: #27ae60;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.oeuvre-stock-unavailable {
+  color: #e74c3c;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.oeuvre-action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.oeuvre-action-buttons .btn {
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  padding: 0.65rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.oeuvre-action-buttons .btn-primary {
+  background: linear-gradient(135deg, #4B749F, #243748);
+  border: none;
+}
+
+.oeuvre-action-buttons .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(75, 116, 159, 0.35);
+  background: linear-gradient(135deg, #3d5980, #1a2a3a);
+}
+
+.oeuvre-action-buttons .btn-outline-dark {
+  border: 2px solid #243748;
+}
+
+.oeuvre-action-buttons .btn-outline-dark:hover {
+  background-color: #243748;
+  color: white;
+  transform: translateY(-2px);
+}
   color: rgba(0,0,0,0.55);
 }
 

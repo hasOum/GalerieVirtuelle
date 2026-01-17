@@ -367,7 +367,7 @@
               <td><strong>{{ vente.prix_unitaire|floatformat:2 }} €</strong></td>
               <td>
                 <strong style="color: var(--g2); font-size: 1.1rem;">
-                  {{ vente.prix_unitaire|add:0|mul:vente.quantite|floatformat:2 }} €
+                  {{ vente.sous_total|floatformat:2 }} €
                 </strong>
               </td>
               <td>

@@ -35,6 +35,7 @@ urlpatterns = [
     path("admin/dashboard/", views.admin_dashboard, name="admin_dashboard"),
     path("admin/validation/", views.admin_validation_list, name="admin_validation_list"),
     path("client/dashboard/", views.client_dashboard, name="client_dashboard"),
+    path("profil/", views.profile_edit, name="profile_edit"),
 
     # Oeuvres (visiteur)
     path("oeuvres/", views.oeuvres_list, name="oeuvres_list"),
@@ -58,5 +59,7 @@ urlpatterns = [
     path("checkout/", views.checkout, name="checkout"),
     path("commandes/", views.orders_list, name="orders_list"),
     path("commandes/<int:order_id>/payer/", views.order_pay, name="order_pay"),
+    path("commandes/<int:order_id>/payment/confirm/", views.payment_confirm, name="payment_confirm"),
+    path("commandes/<int:order_id>/payment/success/", views.payment_success, name="payment_success"),
     path("commandes/<int:order_id>/annuler/", views.order_cancel, name="order_cancel"),
 ]

@@ -177,6 +177,8 @@ class Exposition(models.Model):
         Lieu,
         on_delete=models.PROTECT,
         related_name="expositions",
+        null=True,
+        blank=True,
     )
 
     affiche = models.ImageField(upload_to="expositions/", blank=True, null=True)

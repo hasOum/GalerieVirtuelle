@@ -1,6 +1,8 @@
 {% extends 'galerie/base.html' %}
 {% load static %}
 
+<link rel="stylesheet" href="{% static 'galerie/css/home.css' %}">
+
 {% block content %}
 <div class="hero-section">
     <div class="hero-overlay">
@@ -41,47 +43,89 @@
 
 
 <div class="container my-5">
-  <div class="row text-center g-4">
+  <div class="row g-4">
 
-    <!-- VISITEUR -->
-    <div class="col-md-6">
-      <div class="card shadow h-100">
-        <div class="card-body">
-          <h3 class="card-title">Visiteur</h3>
-          <p class="card-text">Explorez librement notre galerie virtuelle</p>
-          <a href="{% url 'galerie:oeuvres_list' %}" class="btn btn-primary m-1">
-            Explorer les Œuvres
-          </a>
-          <a href="{% url 'galerie:expositions_list' %}" class="btn btn-outline-secondary m-1">
-            Voir les Expositions
-          </a>
+    <!-- VISITEUR - EXPLORE -->
+    <div class="col-lg-6">
+      <div style="background: linear-gradient(135deg, #243748 0%, #4B749F 100%); border-radius: 20px; padding: 3rem 2rem; color: white; box-shadow: 0 10px 40px rgba(36, 55, 72, 0.3); transition: all 0.3s ease; position: relative; overflow: hidden;">
+        <!-- Background decoration -->
+        <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%; "></div>
+        <div style="position: absolute; bottom: -30px; left: -30px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%; "></div>
+        
+        <div style="position: relative; z-index: 1;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">
+            <i class="bi bi-palette"></i>
+          </div>
+          <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">Explorez l'Art</h2>
+          <p style="font-size: 1.1rem; margin-bottom: 2rem; opacity: 0.95;">Découvrez une collection exceptionnelle d'œuvres d'art virtuelles de talents du monde entier</p>
+          
+          <div class="d-flex gap-2 flex-wrap">
+            <a href="{% url 'galerie:oeuvres_list' %}" class="btn" style="background: white; color: #243748; font-weight: 700; padding: 0.75rem 1.5rem; border-radius: 10px; text-decoration: none; transition: all 0.3s ease;">
+              <i class="bi bi-search"></i> Œuvres
+            </a>
+            <a href="{% url 'galerie:expositions_list' %}" class="btn" style="background: rgba(255,255,255,0.2); color: white; font-weight: 700; padding: 0.75rem 1.5rem; border-radius: 10px; border: 2px solid white; text-decoration: none; transition: all 0.3s ease;">
+              <i class="bi bi-calendar-event"></i> Expositions
+            </a>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- COMPTE -->
-    <div class="col-md-6">
-      <div class="card shadow h-100">
-        <div class="card-body">
-          <h3 class="card-title">Compte</h3>
-
-          {% if user.is_authenticated %}
-            <p class="card-text">Vous êtes connecté</p>
-            <form method="post" action="{% url 'galerie:logout' %}?next={% url 'galerie:home' %}" style="display:inline;">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-warning btn-lg">Logout</button>
-            </form>
-          {% else %}
-            <p class="card-text">Connectez-vous ou créez un compte</p>
-            <a href="{% url 'login' %}" class="btn btn-light m-1">
-              Login
-            </a>
-            <a href="{% url 'galerie:register' %}" class="btn btn-outline-dark m-1">
-              Créer un compte
-            </a>
-          {% endif %}
+    <!-- COMPTE - LOGIN/PROFILE -->
+    <div class="col-lg-6">
+      {% if user.is_authenticated %}
+        <!-- Connected user card -->
+        <div style="background: linear-gradient(135deg, #FF6B6B 0%, #ee5a52 100%); border-radius: 20px; padding: 3rem 2rem; color: white; box-shadow: 0 10px 40px rgba(255, 107, 107, 0.3); transition: all 0.3s ease; position: relative; overflow: hidden;">
+          <!-- Background decoration -->
+          <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%; "></div>
+          <div style="position: absolute; bottom: -30px; left: -30px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%; "></div>
+          
+          <div style="position: relative; z-index: 1;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">
+              <i class="bi bi-person-check-fill"></i>
+            </div>
+            <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">Bienvenue!</h2>
+            <p style="font-size: 1.1rem; margin-bottom: 0.5rem;"><strong>{{ user.username }}</strong></p>
+            <p style="font-size: 0.95rem; opacity: 0.9; margin-bottom: 2rem;">Accédez à votre espace personnel</p>
+            
+            <div class="d-flex gap-2 flex-wrap">
+              <a href="{% url 'galerie:client_dashboard' %}" class="btn" style="background: white; color: #FF6B6B; font-weight: 700; padding: 0.75rem 1.5rem; border-radius: 10px; text-decoration: none; transition: all 0.3s ease;">
+                <i class="bi bi-speedometer2"></i> Tableau de Bord
+              </a>
+              <form method="post" action="{% url 'galerie:logout' %}?next={% url 'galerie:home' %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn" style="background: rgba(255,255,255,0.2); color: white; font-weight: 700; padding: 0.75rem 1.5rem; border-radius: 10px; border: 2px solid white; cursor: pointer; transition: all 0.3s ease;">
+                  <i class="bi bi-box-arrow-right"></i> Déconnexion
+                </button>
+              </form>
+            </div>
+          </div>
         </div>
-      </div>
+      {% else %}
+        <!-- Not connected card -->
+        <div style="background: linear-gradient(135deg, #4B749F 0%, #243748 100%); border-radius: 20px; padding: 3rem 2rem; color: white; box-shadow: 0 10px 40px rgba(75, 116, 159, 0.3); transition: all 0.3s ease; position: relative; overflow: hidden;">
+          <!-- Background decoration -->
+          <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%; "></div>
+          <div style="position: absolute; bottom: -30px; left: -30px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%; "></div>
+          
+          <div style="position: relative; z-index: 1;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">
+              <i class="bi bi-box-arrow-in-right"></i>
+            </div>
+            <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">Rejoignez-nous</h2>
+            <p style="font-size: 1.1rem; margin-bottom: 2rem; opacity: 0.95;">Créez un compte pour accéder à votre galerie personnelle et commander des œuvres</p>
+            
+            <div class="d-flex gap-2 flex-wrap">
+              <a href="{% url 'galerie:login' %}" class="btn" style="background: white; color: #4B749F; font-weight: 700; padding: 0.75rem 1.5rem; border-radius: 10px; text-decoration: none; transition: all 0.3s ease;">
+                <i class="bi bi-unlock"></i> Se Connecter
+              </a>
+              <a href="{% url 'galerie:register' %}" class="btn" style="background: rgba(255,255,255,0.2); color: white; font-weight: 700; padding: 0.75rem 1.5rem; border-radius: 10px; border: 2px solid white; text-decoration: none; transition: all 0.3s ease;">
+                <i class="bi bi-person-plus"></i> S'Inscrire
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endif %}
     </div>
 
   </div>

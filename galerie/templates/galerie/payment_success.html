@@ -1,0 +1,190 @@
+{% extends 'galerie/base.html' %}
+{% load static %}
+
+{% block title %}Paiement réussi{% endblock %}
+
+{% block content %}
+<style>
+  .success-container {
+    max-width: 600px;
+    margin: 3rem auto;
+    background: white;
+    border-radius: 8px;
+    padding: 3rem 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+
+  .success-icon {
+    font-size: 4rem;
+    color: #28a745;
+    margin-bottom: 1rem;
+    animation: popIn 0.5s ease;
+  }
+
+  .success-title {
+    color: #243748;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .success-subtitle {
+    color: #666;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
+
+  .order-details {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: left;
+  }
+
+  .order-detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .order-detail-row:last-child {
+    border-bottom: none;
+  }
+
+  .order-detail-label {
+    font-weight: 500;
+    color: #333;
+  }
+
+  .order-detail-value {
+    font-weight: 600;
+    color: #243748;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary-custom {
+    background: linear-gradient(135deg, #4B749F, #243748);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    display: inline-block;
+  }
+
+  .btn-primary-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(75, 116, 159, 0.3);
+    color: white;
+  }
+
+  .btn-secondary-custom {
+    background: transparent;
+    color: #4B749F;
+    border: 2px solid #4B749F;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    display: inline-block;
+  }
+
+  .btn-secondary-custom:hover {
+    background: #4B749F;
+    color: white;
+  }
+
+  .info-box {
+    background: linear-gradient(135deg, rgba(75, 116, 159, 0.1), rgba(36, 55, 72, 0.05));
+    border-left: 4px solid #4B749F;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-top: 2rem;
+    text-align: left;
+  }
+
+  .info-box h4 {
+    color: #243748;
+    margin-bottom: 0.5rem;
+  }
+
+  .info-box p {
+    color: #666;
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+  }
+
+  @keyframes popIn {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+</style>
+
+<div class="success-container">
+  <div class="success-icon">
+    <i class="bi bi-check-circle"></i>
+  </div>
+
+  <h1 class="success-title">Paiement réussi!</h1>
+  <p class="success-subtitle">Merci pour votre commande</p>
+
+  <div class="order-details">
+    <div class="order-detail-row">
+      <span class="order-detail-label">Numéro de commande:</span>
+      <span class="order-detail-value">#{{ commande.id }}</span>
+    </div>
+    <div class="order-detail-row">
+      <span class="order-detail-label">Date:</span>
+      <span class="order-detail-value">{{ commande.date_creation|date:"d/m/Y H:i" }}</span>
+    </div>
+    <div class="order-detail-row">
+      <span class="order-detail-label">Total payé:</span>
+      <span class="order-detail-value" style="color: #FF6B6B; font-size: 1.1rem;">
+        {{ commande.total|floatformat:2 }}€
+      </span>
+    </div>
+    <div class="order-detail-row">
+      <span class="order-detail-label">Statut:</span>
+      <span class="order-detail-value" style="color: #28a745;">
+        <i class="bi bi-check-circle me-1"></i>Payée
+      </span>
+    </div>
+  </div>
+
+  <div class="action-buttons">
+    <a href="{% url 'galerie:home' %}" class="btn-primary-custom">
+      <i class="bi bi-house me-1"></i>Retour à l'accueil
+    </a>
+    <a href="{% url 'galerie:orders_list' %}" class="btn-secondary-custom">
+      <i class="bi bi-receipt me-1"></i>Mes commandes
+    </a>
+  </div>
+
+  <div class="info-box">
+    <h4><i class="bi bi-info-circle me-2"></i>Prochaines étapes</h4>
+    <p>✉️ Vous recevrez un email de confirmation avec les détails de votre commande</p>
+    <p>📦 Suivez votre livraison dans la section "Mes commandes"</p>
+    <p>❓ Des questions? Contactez notre support</p>
+  </div>
+</div>
+
+{% endblock %}

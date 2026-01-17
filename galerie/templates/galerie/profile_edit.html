@@ -1,0 +1,150 @@
+{% extends 'galerie/base.html' %}
+{% load static %}
+
+{% block title %}Édition du Profil | GalerieVirtuelle{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'galerie/css/main.css' %}">
+
+<div class="container py-4">
+
+  <!-- HERO HEADER -->
+  <div style="margin-bottom: 3rem;">
+    <h1 style="font-size: 2.5rem; color: #243748; font-weight: 700; margin-bottom: 0.5rem;">
+      <i class="bi bi-person-circle"></i> Mon Profil
+    </h1>
+    <p style="color: #666; font-size: 1rem;">Modifiez vos informations personnelles</p>
+  </div>
+
+  <!-- Messages -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" style="border-radius: 12px; border-left: 4px solid {% if message.tags == 'success' %}#4CAF50{% elif message.tags == 'error' %}#FF6B6B{% else %}#2196F3{% endif %};">
+        <i class="bi bi-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- PROFILE CARD -->
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <div style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); padding: 2.5rem; border: 2px solid #f0f0f0;">
+        
+        <form method="post" class="needs-validation" novalidate>
+          {% csrf_token %}
+
+          <!-- Username (readonly) -->
+          <div class="mb-4">
+            <label class="form-label" style="font-weight: 600; color: #243748; font-size: 1rem;">Nom d'utilisateur</label>
+            <div class="input-group">
+              <span class="input-group-text" style="background: #f5f5f5; border: 2px solid #e0e0e0; color: #999;">
+                <i class="bi bi-at"></i>
+              </span>
+              <input type="text" class="form-control" value="{{ user.username }}" disabled style="background: #f5f5f5; border: 2px solid #e0e0e0; cursor: not-allowed;">
+            </div>
+            <small style="color: #999; display: block; margin-top: 0.5rem;">
+              <i class="bi bi-info-circle"></i> Non modifiable
+            </small>
+          </div>
+
+          <!-- Prénom -->
+          <div class="mb-4">
+            <label for="first_name" class="form-label" style="font-weight: 600; color: #243748; font-size: 1rem;">Prénom</label>
+            <div class="input-group">
+              <span class="input-group-text" style="background: white; border: 2px solid #ddd; color: #4B749F;">
+                <i class="bi bi-person"></i>
+              </span>
+              <input type="text" class="form-control" id="first_name" name="first_name" 
+                     value="{{ user.first_name }}" 
+                     placeholder="Votre prénom"
+                     style="border: 2px solid #ddd; padding: 0.75rem; border-radius: 0 8px 8px 0;">
+            </div>
+          </div>
+
+          <!-- Nom -->
+          <div class="mb-4">
+            <label for="last_name" class="form-label" style="font-weight: 600; color: #243748; font-size: 1rem;">Nom</label>
+            <div class="input-group">
+              <span class="input-group-text" style="background: white; border: 2px solid #ddd; color: #4B749F;">
+                <i class="bi bi-person"></i>
+              </span>
+              <input type="text" class="form-control" id="last_name" name="last_name" 
+                     value="{{ user.last_name }}" 
+                     placeholder="Votre nom"
+                     style="border: 2px solid #ddd; padding: 0.75rem; border-radius: 0 8px 8px 0;">
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="mb-4">
+            <label for="email" class="form-label" style="font-weight: 600; color: #243748; font-size: 1rem;">Email</label>
+            <div class="input-group">
+              <span class="input-group-text" style="background: white; border: 2px solid #ddd; color: #4B749F;">
+                <i class="bi bi-envelope"></i>
+              </span>
+              <input type="email" class="form-control" id="email" name="email" 
+                     value="{{ user.email }}" 
+                     placeholder="votre.email@exemple.com"
+                     style="border: 2px solid #ddd; padding: 0.75rem; border-radius: 0 8px 8px 0;">
+            </div>
+          </div>
+
+          <!-- Compte info -->
+          <div style="background: #F0F4F8; border-radius: 12px; padding: 1rem; margin-bottom: 2rem; border-left: 4px solid #4B749F;">
+            <small style="color: #666; display: block;">
+              <i class="bi bi-calendar"></i> <strong>Inscrit depuis:</strong> {{ user.date_joined|date:"d F Y" }}
+            </small>
+            <small style="color: #666; display: block; margin-top: 0.5rem;">
+              <i class="bi bi-clock"></i> <strong>Dernière connexion:</strong> 
+              {% if user.last_login %}
+                {{ user.last_login|date:"d F Y à H:i" }}
+              {% else %}
+                Première connexion
+              {% endif %}
+            </small>
+          </div>
+
+          <!-- Buttons -->
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-lg" style="background: linear-gradient(135deg, #4B749F 0%, #243748 100%); color: white; border: none; border-radius: 8px; font-weight: 700; padding: 0.9rem; transition: all 0.3s ease;">
+              <i class="bi bi-check-circle"></i> Sauvegarder les modifications
+            </button>
+            <a href="{% url 'galerie:client_dashboard' %}" class="btn btn-lg" style="background: white; color: #4B749F; border: 2px solid #4B749F; border-radius: 8px; font-weight: 700; text-decoration: none;">
+              <i class="bi bi-arrow-left"></i> Retour au tableau de bord
+            </a>
+          </div>
+        </form>
+
+        <!-- Change Password Section -->
+        <div style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid #e0e0e0;">
+          <h5 style="color: #243748; font-weight: 700; margin-bottom: 1rem;">
+            <i class="bi bi-lock"></i> Sécurité
+          </h5>
+          <a href="{% url 'password_change' %}" class="btn btn-outline-secondary w-100" style="border-radius: 8px; font-weight: 600;">
+            <i class="bi bi-shield-check"></i> Changer le mot de passe
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<style>
+  .input-group-text {
+    border-radius: 8px 0 0 8px !important;
+  }
+
+  .form-control:focus {
+    border-color: #4B749F !important;
+    box-shadow: 0 0 0 0.2rem rgba(75, 116, 159, 0.15) !important;
+  }
+
+  button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(75, 116, 159, 0.3);
+  }
+</style>
+{% endblock %}

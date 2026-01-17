@@ -1,33 +1,206 @@
-_{% extends 'galerie/base.html' %}
-{% block title %}Panier{% endblock %}
+{% extends 'galerie/base.html' %}
+{% load static %}
+
+{% block title %}Panier | GalerieVirtuelle{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-  <h2>Mon panier</h2>
+<link rel="stylesheet" href="{% static 'galerie/css/cart.css' %}">
 
-  {% if panier.items.all %}
-    <table class="table">
-      <thead>
-        <tr><th>Œuvre</th><th>Quantité</th><th>Prix</th><th></th></tr>
-      </thead>
-      <tbody>
-        {% for item in panier.items.all %}
-          <tr>
-            <td>{{ item.oeuvre.titre }}</td>
-            <td>{{ item.quantite }}</td>
-            <td>{{ item.sous_total }}</td>
-            <td>
-              <a class="btn btn-sm btn-outline-danger"
-                 href="{% url 'galerie:cart_remove' item.oeuvre.id %}">Supprimer</a>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+<div class="container py-5">
+  {# Hero #}
+  <div class="cart-hero mb-5">
+    <h1 class="cart-title">
+      <i class="bi bi-bag-check me-2"></i>Mon Panier
+    </h1>
+    <p class="cart-subtitle">Gérez vos sélections d'œuvres d'art</p>
+  </div>
 
-    <p><strong>Total:</strong> {{ panier.total }}</p>
-    <a class="btn btn-dark" href="{% url 'galerie:checkout' %}">Commander</a>
-  {% else %}
-    <p class="text-muted">Panier vide.</p>
-  {% endif %}
+  <div id="cart-container">
+    <!-- Le contenu du panier sera généré par JavaScript -->
+  </div>
 </div>
+
+<script>
+// Passer les données du serveur en variables JavaScript
+const isAuthenticated = {% if user.is_authenticated %}true{% else %}false{% endif %};
+const loginUrl = "{% url 'galerie:login' %}";
+const oeuvresUrl = "{% url 'galerie:oeuvres_list' %}";
+const checkoutUrl = "{% url 'galerie:checkout' %}";
+
+document.addEventListener('DOMContentLoaded', function() {
+  renderCart();
+  
+  // Écouter les changements dans le localStorage d'autres onglets
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'cart') {
+      renderCart();
+    }
+  });
+});
+
+function renderCart() {
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const container = document.getElementById('cart-container');
+  
+  if (cart.length === 0) {
+    container.innerHTML = `
+      <div class="empty-cart text-center py-5">
+        <div class="empty-cart-icon mb-4">
+          <i class="bi bi-bag-x"></i>
+        </div>
+        <h3 class="mb-3">Votre panier est vide</h3>
+        <p class="text-muted mb-4">Découvrez nos magnifiques œuvres d'art et commencez à remplir votre panier!</p>
+        <a href="${oeuvresUrl}" class="btn btn-primary btn-lg">
+          <i class="bi bi-shop me-2"></i>Explorer les œuvres
+        </a>
+      </div>
+    `;
+    return;
+  }
+  
+  // Calculs
+  const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const shipping = 5.00;
+  const tax = subtotal * 0.20;
+  const total = subtotal + shipping + tax;
+  
+  // Construction du HTML
+  let cartHTML = `
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="cart-items-section">
+          <h2 class="section-title mb-4">
+            <i class="bi bi-list-check me-2"></i>${cart.length} article${cart.length > 1 ? 's' : ''}
+          </h2>
+          
+          <div class="cart-items-list">
+  `;
+  
+  // Boucle sur les articles
+  cart.forEach(item => {
+    const subtotalItem = item.price * item.quantity;
+    cartHTML += `
+      <div class="cart-item" data-item-id="${item.id}">
+        <div class="cart-item-image">
+          <div class="placeholder-img" style="background: linear-gradient(135deg, #4B749F, #243748);">
+            <span class="item-title-overlay">${item.title.split(' ').slice(0, 3).join(' ')}</span>
+          </div>
+        </div>
+
+        <div class="cart-item-details">
+          <h4 class="item-title">${item.title}</h4>
+          <div class="item-price">${item.price.toFixed(2)}€</div>
+        </div>
+
+        <div class="cart-item-quantity">
+          <label class="quantity-label">Quantité:</label>
+          <div class="quantity-controls">
+            <button class="qty-btn" onclick="decreaseQty(${item.id})">
+              <i class="bi bi-dash"></i>
+            </button>
+            <input type="number" class="qty-input" value="${item.quantity}" min="1" readonly>
+            <button class="qty-btn" onclick="increaseQty(${item.id})">
+              <i class="bi bi-plus"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="cart-item-total">
+          <div class="total-label">Sous-total</div>
+          <div class="total-price">${subtotalItem.toFixed(2)}€</div>
+        </div>
+
+        <button class="cart-item-remove" onclick="removeFromCart(${item.id})" title="Supprimer">
+          <i class="bi bi-trash3"></i>
+        </button>
+      </div>
+    `;
+  });
+  
+  cartHTML += `
+          </div>
+
+          <div class="cart-actions mt-4">
+            <a href="${oeuvresUrl}" class="btn btn-outline-primary">
+              <i class="bi bi-arrow-left me-2"></i>Continuer vos achats
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="cart-summary sticky-top" style="top: 100px;">
+          <h2 class="section-title mb-4">
+            <i class="bi bi-receipt me-2"></i>Résumé de la commande
+          </h2>
+
+          <div class="summary-details">
+            <div class="summary-row">
+              <span class="summary-label">Sous-total:</span>
+              <span class="summary-value">${subtotal.toFixed(2)}€</span>
+            </div>
+
+            <div class="summary-row">
+              <span class="summary-label">Frais de port:</span>
+              <span class="summary-value">${shipping.toFixed(2)}€</span>
+            </div>
+
+            <div class="summary-row">
+              <span class="summary-label">TVA (20%):</span>
+              <span class="summary-value">${tax.toFixed(2)}€</span>
+            </div>
+
+            <div class="summary-row summary-total">
+              <span class="summary-label">Total:</span>
+              <span class="summary-total-value">${total.toFixed(2)}€</span>
+            </div>
+          </div>
+
+          <div class="summary-actions mt-4">
+  `;
+  
+  // Vérifier si l'utilisateur est authentifié (côté JavaScript)
+  if (isAuthenticated) {
+    cartHTML += `
+              <button class="btn btn-primary w-100 btn-lg mb-2" onclick="proceedToCheckout()">
+                <i class="bi bi-credit-card me-2"></i>Procéder au paiement
+              </button>
+    `;
+  } else {
+    cartHTML += `
+              <a href="${loginUrl}" class="btn btn-primary w-100 btn-lg mb-2">
+                <i class="bi bi-person-lock me-2"></i>Se connecter pour payer
+              </a>
+    `;
+  }
+  
+  cartHTML += `
+            <button class="btn btn-outline-secondary w-100" onclick="clearCart()">
+              <i class="bi bi-trash3 me-2"></i>Vider le panier
+            </button>
+          </div>
+
+          <div class="summary-info mt-4">
+            <div class="info-item">
+              <i class="bi bi-shield-check"></i>
+              <span>Paiement sécurisé</span>
+            </div>
+            <div class="info-item">
+              <i class="bi bi-truck"></i>
+              <span>Livraison rapide</span>
+            </div>
+            <div class="info-item">
+              <i class="bi bi-arrow-repeat"></i>
+              <span>Retour gratuit 30j</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  container.innerHTML = cartHTML;
+}
+</script>
+
 {% endblock %}

@@ -70,3 +70,8 @@ USE_I18N = True
 USE_TZ = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# ===== STRIPE CONFIGURATION =====
+# Use test keys for development
+STRIPE_PUBLIC_KEY = "pk_test_51QxU3IB9WXO5yyKDUZ5lQX9zQNqK1ZqQ0YzFxmXxLqXxLqXxLqXxLqXx"
+STRIPE_SECRET_KEY = "sk_test_51QxU3IB9WXO5yyKDUZ5lQX9zQNqK1ZqQ0YzFxmXxLqXxLqXxLqXxLqXx"

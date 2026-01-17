@@ -17,5 +17,25 @@
 
   { "model": "galerie.oeuvre", "pk": 9, "fields": { "titre": "Atlantique Bleu", "description": "Grand format abstrait, couches de bleu.", "image": "oeuvres/atlantique_bleu.jpg", "technique": "Huile", "annee_creation": 2025, "prix": "2500.00", "stock": 1, "statut": "valide", "artiste": 1, "categorie": null, "date_soumission": "2026-01-08T09:45:00Z", "date_validation": "2026-01-08T18:00:00Z" } },
 
-  { "model": "galerie.oeuvre", "pk": 10, "fields": { "titre": "Terre & Matière", "description": "Travail matière et relief.", "image": "oeuvres/terre_matiere.jpg", "technique": "Mixte", "annee_creation": 2022, "prix": "1600.00", "stock": 1, "statut": "refuse", "artiste": 1, "categorie": null, "date_soumission": "2026-01-08T13:00:00Z", "date_validation": "2026-01-09T10:00:00Z" } }
+  { "model": "galerie.oeuvre", "pk": 10, "fields": { "titre": "Terre & Matière", "description": "Travail matière et relief.", "image": "oeuvres/terre_matiere.jpg", "technique": "Mixte", "annee_creation": 2022, "prix": "1600.00", "stock": 1, "statut": "refuse", "artiste": 1, "categorie": null, "date_soumission": "2026-01-08T13:00:00Z", "date_validation": "2026-01-09T10:00:00Z" } },
+
+  { "model": "galerie.oeuvre", "pk": 11, "fields": { "titre": "Harmonie Douce", "description": "Peinture abstraite avec dégradés harmonieux.", "image": "oeuvres/harmonie_douce.jpg", "technique": "Acrylique", "annee_creation": 2025, "prix": "1350.00", "stock": 2, "statut": "valide", "artiste": 1, "categorie": null, "date_soumission": "2026-01-09T10:00:00Z", "date_validation": "2026-01-09T14:00:00Z" } },
+
+  { "model": "galerie.oeuvre", "pk": 12, "fields": { "titre": "Chaos Urbain", "description": "Vision impressionniste de la ville moderne.", "image": "oeuvres/chaos_urbain.jpg", "technique": "Huile", "annee_creation": 2024, "prix": "1750.00", "stock": 1, "statut": "valide", "artiste": 1, "categorie": null, "date_soumission": "2026-01-09T15:00:00Z", "date_validation": "2026-01-09T20:00:00Z" } },
+
+  { "model": "galerie.oeuvre", "pk": 13, "fields": { "titre": "Lumière Dorée", "description": "Étude de lumière naturelle au coucher de soleil.", "image": "oeuvres/lumiere_doree.jpg", "technique": "Acrylique", "annee_creation": 2025, "prix": "980.00", "stock": 1, "statut": "valide", "artiste": 1, "categorie": null, "date_soumission": "2026-01-10T08:00:00Z", "date_validation": "2026-01-10T12:00:00Z" } },
+
+  { "model": "galerie.oeuvre", "pk": 14, "fields": { "titre": "Frontières Invisibles", "description": "Photographie abstraite de frontières et limites.", "image": "oeuvres/frontieres_invisibles.jpg", "technique": "Numérique", "annee_creation": 2025, "prix": "850.00", "stock": 2, "statut": "valide", "artiste": 1, "categorie": null, "date_soumission": "2026-01-10T09:30:00Z", "date_validation": "2026-01-10T16:00:00Z" } },
+
+  { "model": "galerie.oeuvre", "pk": 15, "fields": { "titre": "Solitudes Partageés", "description": "Série conceptuelle sur l'isolement collectif.", "image": "oeuvres/solitudes_partagees.jpg", "technique": "Mixte", "annee_creation": 2024, "prix": "1450.00", "stock": 1, "statut": "valide", "artiste": 1, "categorie": null, "date_soumission": "2026-01-10T11:00:00Z", "date_validation": "2026-01-10T18:00:00Z" } },
+
+  { "model": "galerie.oeuvre", "pk": 16, "fields": { "titre": "Écho Nocturne", "description": "Installation minimaliste avec effets lumineux.", "image": "oeuvres/echo_nocturne.jpg", "technique": "Mixte", "annee_creation": 2025, "prix": "2200.00", "stock": 1, "statut": "valide", "artiste": 1, "categorie": null, "date_soumission": "2026-01-11T07:00:00Z", "date_validation": "2026-01-11T13:00:00Z" } },
+
+  { "model": "galerie.oeuvre", "pk": 17, "fields": { "titre": "Poésie Visuelle", "description": "Jeu de textures et de calligraphies.", "image": "oeuvres/poesie_visuelle.jpg", "technique": "Acrylique", "annee_creation": 2023, "prix": "1100.00", "stock": 2, "statut": "valide", "artiste": 1, "categorie": null, "date_soumission": "2026-01-11T10:00:00Z", "date_validation": "2026-01-11T15:00:00Z" } },
+
+  { "model": "galerie.oeuvre", "pk": 18, "fields": { "titre": "Symphonie Verte", "description": "Représentation abstraite de la nature.", "image": "oeuvres/symphonie_verte.jpg", "technique": "Huile", "annee_creation": 2024, "prix": "1900.00", "stock": 1, "statut": "valide", "artiste": 1, "categorie": null, "date_soumission": "2026-01-11T12:00:00Z", "date_validation": "2026-01-11T19:00:00Z" } },
+
+  { "model": "galerie.oeuvre", "pk": 19, "fields": { "titre": "Fragments Éphémères", "description": "Composition basée sur l'impermanence.", "image": "oeuvres/fragments_ephemeres.jpg", "technique": "Numérique", "annee_creation": 2025, "prix": "720.00", "stock": 3, "statut": "valide", "artiste": 1, "categorie": null, "date_soumission": "2026-01-12T08:30:00Z", "date_validation": "2026-01-12T14:00:00Z" } },
+
+  { "model": "galerie.oeuvre", "pk": 20, "fields": { "titre": "Métamorphose", "description": "Étude de transformation et de cycles.", "image": "oeuvres/metamorphose.jpg", "technique": "Mixte", "annee_creation": 2024, "prix": "1550.00", "stock": 1, "statut": "en_attente", "artiste": 1, "categorie": null, "date_soumission": "2026-01-12T10:00:00Z", "date_validation": null } }
 ]

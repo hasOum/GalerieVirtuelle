@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import (
     Utilisateur, Artiste, Categorie, Oeuvre, 
-    Lieu, Exposition, Commande, LigneCommande, Paiement
+    Lieu, Exposition, Commande, LigneCommande, Paiement,
+    Panier, PanierItem
 )
 
 # ============================================
@@ -129,3 +130,39 @@ class PaiementAdmin(admin.ModelAdmin):
 class LieuAdmin(admin.ModelAdmin):
     list_display = ['nom_lieu', 'ville', 'pays']
     search_fields = ['nom_lieu', 'ville', 'pays']
+
+# ============================================
+# 9. ADMIN PANIER
+# ============================================
+
+class PanierItemInline(admin.TabularInline):
+    model = PanierItem
+    extra = 1
+
+
+@admin.register(Panier)
+class PanierAdmin(admin.ModelAdmin):
+    list_display = ['id', 'client', 'updated_at', 'nombre_articles', 'total_panier']
+    list_filter = ['updated_at']
+    search_fields = ['client__username']
+    inlines = [PanierItemInline]
+    readonly_fields = ['updated_at']
+    
+    def nombre_articles(self, obj):
+        return obj.items.count()
+    nombre_articles.short_description = 'Nombre d\'articles'
+    
+    def total_panier(self, obj):
+        return f"{obj.total():.2f}€"
+    total_panier.short_description = 'Total'
+
+
+@admin.register(PanierItem)
+class PanierItemAdmin(admin.ModelAdmin):
+    list_display = ['id', 'panier', 'oeuvre', 'quantite', 'get_sous_total']
+    list_filter = ['panier']
+    search_fields = ['oeuvre__titre', 'panier__client__username']
+    
+    def get_sous_total(self, obj):
+        return f"{obj.sous_total:.2f}€"
+    get_sous_total.short_description = 'Sous-total'
