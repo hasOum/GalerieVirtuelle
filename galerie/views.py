@@ -322,7 +322,7 @@ def oeuvres_list(request):
     categories = Categorie.objects.all()
     artistes = Artiste.objects.all()
     techniques = Oeuvre.objects.filter(statut=Oeuvre.Statut.VALIDE).values_list("technique", flat=True).distinct()
-    techniques = [t for t in techniques if t]
+    techniques = sorted(set(t for t in techniques if t))  # Remove duplicates and sort
 
     return render(
         request,
