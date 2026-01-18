@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: galerie-virtuelle
+    runtime: python
+    pythonVersion: 3.11
+    buildCommand: "pip install --no-cache-dir -r requirements.txt && python manage.py collectstatic --noinput"
+    startCommand: "gunicorn GallerieVirtuelle.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "*"
+      - key: DATABASE_URL
+        value: "" # Will be set via Render dashboard
+      - key: SECRET_KEY
+        value: "" # Will be set via Render dashboard
+      - key: STRIPE_PUBLIC_KEY
+        value: "" # Will be set via Render dashboard
+      - key: STRIPE_SECRET_KEY
+        value: "" # Will be set via Render dashboard
