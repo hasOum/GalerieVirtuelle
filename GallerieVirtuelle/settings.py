@@ -81,3 +81,8 @@ STRIPE_SECRET_KEY = "sk_test_51QxU3IB9WXO5yyKDUZ5lQX9zQNqK1ZqQ0YzFxmXxLqXxLqXxLq
 SECURE_SSL_REDIRECT = False
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
+
+# ===== SESSION TIMEOUT (10 minutes of inactivity) =====
+SESSION_COOKIE_AGE = 600  # 10 minutes in seconds
+SESSION_SAVE_EVERY_REQUEST = True  # Update session time on every request
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Also expire on browser close
