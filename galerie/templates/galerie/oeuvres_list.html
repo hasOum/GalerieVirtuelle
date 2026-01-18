@@ -118,9 +118,6 @@
             {% endif %}
 
             <div class="oeuvre-badges-left">
-              {% if o.prix %}
-                <div class="oeuvre-price-badge-left">{{ o.prix|floatformat:0 }}€</div>
-              {% endif %}
               {% if o.categorie %}
                 <div class="oeuvre-badge">{{ o.categorie.nom_categorie }}</div>
               {% endif %}
