@@ -1,0 +1,709 @@
+{% extends 'galerie/base.html' %}
+{% load static %}
+
+{% block title %}Paiement | Commande #{{ commande.id }}{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: 100vh;
+    padding-top: 80px;
+  }
+
+  .payment-container {
+    max-width: 1000px;
+    margin: 3rem auto;
+    background: white;
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 8px 32px rgba(36, 55, 72, 0.15);
+    animation: fadeInUp 0.6s ease;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* HEADER */
+  .payment-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    border-bottom: 3px solid #4B749F;
+    padding-bottom: 1.5rem;
+  }
+
+  .payment-header h1 {
+    color: #243748;
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+
+  .payment-header p {
+    color: #666;
+    font-size: 1.05rem;
+    margin: 0;
+  }
+
+  .payment-header strong {
+    color: #4B749F;
+    font-weight: 600;
+  }
+
+  /* MESSAGES */
+  .django-messages {
+    margin-bottom: 2rem;
+    grid-column: 1 / -1;
+  }
+
+  .message-item {
+    padding: 1rem 1.25rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    border-left: 4px solid;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    animation: slideDown 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .message-item.error {
+    background: #ffe0e0;
+    border-color: #FF6B6B;
+    color: #d32f2f;
+  }
+
+  .message-item.success {
+    background: #e0ffe0;
+    border-color: #4CAF50;
+    color: #1b5e20;
+  }
+
+  .message-item.warning {
+    background: #fff3e0;
+    border-color: #FF9800;
+    color: #e65100;
+  }
+
+  .message-item.info {
+    background: #e0f7fa;
+    border-color: #00BCD4;
+    color: #006064;
+  }
+
+  .message-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+
+  /* DASHBOARD */
+  .payment-dashboard {
+    background: linear-gradient(135deg, #243748 0%, #4B749F 100%);
+    border-radius: 14px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    color: white;
+    box-shadow: 0 8px 24px rgba(75, 116, 159, 0.2);
+  }
+
+  .dashboard-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .dashboard-subtitle {
+    opacity: 0.85;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .stat-card {
+    background: rgba(255, 255, 255, 0.12);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border-left: 4px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .stat-card:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .stat-card.success {
+    border-left-color: #4CAF50;
+  }
+
+  .stat-card.info {
+    border-left-color: #2196F3;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    opacity: 0.75;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -1px;
+  }
+
+  /* CONTENT GRID */
+  .payment-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .payment-container {
+      padding: 1.5rem;
+    }
+
+    .payment-header h1 {
+      font-size: 1.8rem;
+    }
+
+    .payment-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+
+  /* ORDER SUMMARY */
+  .order-summary {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 14px;
+    padding: 2rem;
+    border-left: 5px solid #4B749F;
+    height: fit-content;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  .order-summary h3 {
+    color: #243748;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .order-items {
+    margin-bottom: 1.5rem;
+    max-height: 350px;
+    overflow-y: auto;
+  }
+
+  .order-items::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .order-items::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 10px;
+  }
+
+  .order-items::-webkit-scrollbar-thumb {
+    background: #4B749F;
+    border-radius: 10px;
+  }
+
+  .order-item {
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid #4B749F;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .order-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateX(4px);
+  }
+
+  .item-info h5 {
+    color: #243748;
+    font-weight: 600;
+    margin: 0 0 0.25rem 0;
+    font-size: 0.95rem;
+  }
+
+  .item-info small {
+    color: #999;
+    display: block;
+    font-size: 0.85rem;
+  }
+
+  .item-price {
+    color: #FF6B6B;
+    font-weight: 700;
+    white-space: nowrap;
+    margin-left: 1rem;
+    font-size: 1.1rem;
+  }
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    color: #666;
+    font-weight: 500;
+  }
+
+  .summary-row:last-child {
+    border-bottom: none;
+  }
+
+  .summary-row.total {
+    padding: 1.2rem 0;
+    font-size: 1.35rem;
+    color: #243748;
+    font-weight: 700;
+    border-top: 2px solid #4B749F;
+    margin-top: 1rem;
+  }
+
+  .summary-row.total span:last-child {
+    color: #FF6B6B;
+  }
+
+  .security-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: #4CAF50;
+    font-size: 0.95rem;
+    margin-top: 1.5rem;
+    font-weight: 600;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  /* PAYMENT FORM */
+  .payment-form {
+    background: white;
+  }
+
+  .form-section {
+    margin-bottom: 2.5rem;
+  }
+
+  .form-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .form-section h4 {
+    color: #243748;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    border-bottom: 2px solid #4B749F;
+    padding-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: block;
+    color: #243748;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+    font-size: 0.95rem;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 0.85rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+    font-family: inherit;
+    color: #333;
+  }
+
+  .form-control::placeholder {
+    color: #999;
+  }
+
+  .form-control:hover {
+    border-color: #4B749F;
+    background-color: white;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: #4B749F;
+    background-color: white;
+    box-shadow: 0 0 0 4px rgba(75, 116, 159, 0.1);
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+
+  .form-row-three {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 1.25rem;
+  }
+
+  @media (max-width: 576px) {
+    .form-row,
+    .form-row-three {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .form-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+    background: #f9f9f9;
+    border-radius: 10px;
+    border: 2px solid #e0e0e0;
+    transition: all 0.3s ease;
+  }
+
+  .form-check:hover {
+    background: #f0f5f9;
+    border-color: #4B749F;
+  }
+
+  .form-check-input {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #4B749F;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .form-check-label {
+    color: #666;
+    cursor: pointer;
+    margin: 0;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .form-error {
+    color: #d32f2f;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    display: block;
+    font-weight: 500;
+  }
+
+  /* BUTTONS */
+  .btn-pay {
+    width: 100%;
+    padding: 1.2rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #4B749F, #243748);
+    border: none;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 2.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    box-shadow: 0 4px 16px rgba(75, 116, 159, 0.2);
+  }
+
+  .btn-pay:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(75, 116, 159, 0.35);
+  }
+
+  .btn-pay:active {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 12px rgba(75, 116, 159, 0.25);
+  }
+
+  .cancel-link {
+    display: inline-block;
+    margin-top: 1.5rem;
+    text-align: center;
+    width: 100%;
+    padding: 0.75rem;
+    color: #999;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+  }
+
+  .cancel-link:hover {
+    background: #f0f0f0;
+    color: #666;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<div class="payment-container">
+  <!-- HEADER -->
+  <div class="payment-header">
+    <h1>💳 Effectuez votre paiement</h1>
+    <p>Commande #<strong>{{ commande.id }}</strong> • {{ commande.date_commande|date:"d/m/Y à H:i" }}</p>
+  </div>
+
+  <!-- MESSAGES -->
+  {% if messages %}
+    <div class="django-messages">
+      {% for message in messages %}
+        {% if 'panier est vide' not in message %}
+        <div class="message-item {% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">
+          <span class="message-icon">
+            {% if message.tags == 'error' %}❌
+            {% elif message.tags == 'success' %}✅
+            {% elif message.tags == 'warning' %}⚠️
+            {% else %}ℹ️{% endif %}
+          </span>
+          <span>{{ message }}</span>
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- DASHBOARD -->
+  <div class="payment-dashboard">
+    <div class="dashboard-title">📊 Résumé de votre transaction</div>
+    <div class="dashboard-subtitle">Vérifiez les informations avant de procéder au paiement</div>
+    
+    <div class="dashboard-stats">
+      <div class="stat-card info">
+        <div class="stat-label">📦 Nombre d'articles</div>
+        <div class="stat-value">{{ lignes|length }}</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-label">💰 Montant total</div>
+        <div class="stat-value">{{ commande.montant_total|floatformat:2 }}€</div>
+      </div>
+      
+      <div class="stat-card success">
+        <div class="stat-label">✓ Statut</div>
+        <div class="stat-value" style="font-size: 1.2rem;">
+          {% if commande.statut == 'en_cours' %}
+            En attente
+          {% else %}
+            {{ commande.get_statut_display }}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENU -->
+  <div class="payment-content">
+    
+    <!-- RÉSUMÉ DE COMMANDE -->
+    <div class="order-summary">
+      <h3>📦 Résumé de commande</h3>
+      
+      <div class="order-items">
+        {% for ligne in lignes %}
+          <div class="order-item">
+            <div class="item-info">
+              <h5>{{ ligne.oeuvre.titre }}</h5>
+              <small>{{ ligne.quantite }} × {{ ligne.prix_unitaire|floatformat:0 }}€</small>
+            </div>
+            <div class="item-price">
+              {{ ligne.prix_unitaire|floatformat:0 }}€
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div style="margin-top: 1.5rem;">
+        <div class="summary-row">
+          <span>Sous-total:</span>
+          <span>{{ commande.montant_total|floatformat:2 }}€</span>
+        </div>
+        <div class="summary-row">
+          <span>Frais de port:</span>
+          <span>0€</span>
+        </div>
+        <div class="summary-row total">
+          <span>Total:</span>
+          <span>{{ commande.montant_total|floatformat:2 }}€</span>
+        </div>
+      </div>
+
+      <div class="security-badge">
+        <i class="bi bi-shield-check"></i>
+        Paiement sécurisé
+      </div>
+    </div>
+
+    <!-- FORMULAIRE DE PAIEMENT -->
+    <div class="payment-form">
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <!-- ADRESSE DE FACTURATION -->
+        <div class="form-section">
+          <h4>📍 Adresse de facturation</h4>
+
+          <div class="form-group">
+            {{ form.adresse.label_tag }}
+            {{ form.adresse }}
+            {% if form.adresse.errors %}
+              <span class="form-error">{{ form.adresse.errors.0 }}</span>
+            {% endif %}
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              {{ form.code_postal.label_tag }}
+              {{ form.code_postal }}
+              {% if form.code_postal.errors %}
+                <span class="form-error">{{ form.code_postal.errors.0 }}</span>
+              {% endif %}
+            </div>
+            <div class="form-group">
+              {{ form.ville.label_tag }}
+              {{ form.ville }}
+              {% if form.ville.errors %}
+                <span class="form-error">{{ form.ville.errors.0 }}</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="form-group">
+            {{ form.pays.label_tag }}
+            {{ form.pays }}
+            {% if form.pays.errors %}
+              <span class="form-error">{{ form.pays.errors.0 }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- INFORMATIONS DE CARTE -->
+        <div class="form-section">
+          <h4>💳 Informations de paiement</h4>
+
+          <div class="form-group">
+            {{ form.numero_carte.label_tag }}
+            {{ form.numero_carte }}
+            {% if form.numero_carte.errors %}
+              <span class="form-error">{{ form.numero_carte.errors.0 }}</span>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            {{ form.nom_titulaire.label_tag }}
+            {{ form.nom_titulaire }}
+            {% if form.nom_titulaire.errors %}
+              <span class="form-error">{{ form.nom_titulaire.errors.0 }}</span>
+            {% endif %}
+          </div>
+
+          <div class="form-row-three">
+            <div class="form-group">
+              {{ form.date_expiration.label_tag }}
+              {{ form.date_expiration }}
+              {% if form.date_expiration.errors %}
+                <span class="form-error">{{ form.date_expiration.errors.0 }}</span>
+              {% endif %}
+            </div>
+            <div class="form-group">
+              {{ form.cvv.label_tag }}
+              {{ form.cvv }}
+              {% if form.cvv.errors %}
+                <span class="form-error">{{ form.cvv.errors.0 }}</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- CONDITIONS -->
+        <div class="form-section">
+          <div class="form-check">
+            {{ form.accepte_conditions }}
+            {{ form.accepte_conditions.label_tag }}
+            {% if form.accepte_conditions.errors %}
+              <span class="form-error">{{ form.accepte_conditions.errors.0 }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- BOUTON PAYER -->
+        <button type="submit" class="btn-pay">
+          ✓ Payer {{ commande.montant_total|floatformat:2 }}€
+        </button>
+
+        <a href="{% url 'galerie:orders_list' %}" class="cancel-link">
+          ← Annuler et retourner aux commandes
+        </a>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

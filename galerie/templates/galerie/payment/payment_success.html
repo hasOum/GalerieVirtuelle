@@ -154,12 +154,12 @@
     </div>
     <div class="order-detail-row">
       <span class="order-detail-label">Date:</span>
-      <span class="order-detail-value">{{ commande.date_creation|date:"d/m/Y H:i" }}</span>
+      <span class="order-detail-value">{{ commande.date_commande|date:"d/m/Y H:i" }}</span>
     </div>
     <div class="order-detail-row">
       <span class="order-detail-label">Total payé:</span>
       <span class="order-detail-value" style="color: #FF6B6B; font-size: 1.1rem;">
-        {{ commande.total|floatformat:2 }}€
+        {{ commande.montant_total|floatformat:2 }}€
       </span>
     </div>
     <div class="order-detail-row">

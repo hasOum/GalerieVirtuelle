@@ -4,13 +4,15 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.generic import ListView, DetailView
-from django.db import transaction
-from django.db.models import Q
+from django.db import transaction, models
+from django.db.models import Q, Count
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.urls import reverse
+from django.utils import timezone
+from datetime import timedelta
 
-from .forms import RegisterForm, OeuvreForm
+from .forms import RegisterForm, OeuvreForm, PaiementForm
 from .models import (
     Oeuvre,
     Exposition,
@@ -21,7 +23,33 @@ from .models import (
     Commande,
     LigneCommande,
     Paiement,
+    Notification,
+    Utilisateur,
 )
+
+
+# ======================
+# Helper: Créer une notification
+# ======================
+def creer_notification(utilisateur, titre, message, type_notif='information', exposition=None):
+    """
+    Crée une notification pour un utilisateur
+    
+    Args:
+        utilisateur: L'utilisateur destinataire
+        titre: Titre de la notification
+        message: Contenu du message
+        type_notif: Type de notification ('exposition', 'mise_a_jour', 'information', 'alerte')
+        exposition: Exposition liée (optionnel)
+    """
+    return Notification.objects.create(
+        utilisateur=utilisateur,
+        titre=titre,
+        message=message,
+        type_notif=type_notif,
+        exposition=exposition,
+    )
+
 
 # ======================
 # Home page
@@ -45,8 +73,11 @@ def register(request):
             return redirect("galerie:home")
     else:
         form = RegisterForm()
+        # Clear any previous messages
+        storage = messages.get_messages(request)
+        storage.used = True
 
-    return render(request, "registration/register.html", {"form": form})
+    return render(request, "galerie/auth/register.html", {"form": form})
 
 
 # ======================
@@ -78,7 +109,7 @@ def login_view(request):
     else:
         form = AuthenticationForm()
 
-    return render(request, "registration/login.html", {"form": form})
+    return render(request, "galerie/auth/login.html", {"form": form})
 
 
 # ======================
@@ -102,7 +133,7 @@ def profile_edit(request):
         if email and email != user.email:
             if User.objects.filter(email=email).exists():
                 messages.error(request, "Cet email est déjà utilisé.")
-                return render(request, "galerie/profile_edit.html", {"user": user})
+                return render(request, "galerie/profile/profile_edit.html", {"user": user})
         
         # Mettre à jour
         user.first_name = first_name
@@ -113,7 +144,7 @@ def profile_edit(request):
         messages.success(request, "Profil mis à jour avec succès!")
         return redirect("galerie:profile_edit")
     
-    return render(request, "galerie/profile_edit.html")
+    return render(request, "galerie/profile/profile_edit.html")
 
 
 # ======================
@@ -129,7 +160,7 @@ def logout_view(request):
 # ======================
 @login_required
 def client_dashboard(request):
-    return render(request, "galerie/client_dashboard.html")
+    return render(request, "galerie/dashboard/client_dashboard.html")
 
 
 # ======================
@@ -146,7 +177,7 @@ def artiste_dashboard(request):
 
     return render(
         request,
-        "galerie/artiste_dashboard.html",
+        "galerie/dashboard/artiste_dashboard.html",
         {"artiste": artiste, "oeuvres": oeuvres},
     )
 
@@ -168,12 +199,10 @@ def artiste_sales(request):
         .order_by("-commande__date_commande")
     )
 
-    # Ajouter le sous-total calculé à chaque vente
+    # Calculer le total des ventes
     total_ventes = 0
     for vente in ventes:
-        sous_total = float(vente.prix_unitaire) * vente.quantite
-        vente.sous_total = sous_total
-        total_ventes += sous_total
+        total_ventes += vente.sous_total
 
     # Compter les ventes par statut
     ventes_payees = ventes.filter(commande__statut="payee").count()
@@ -181,7 +210,7 @@ def artiste_sales(request):
 
     return render(
         request,
-        "galerie/artiste_sales.html",
+        "galerie/orders/artiste_sales.html",
         {
             "artiste": artiste,
             "ventes": ventes,
@@ -201,12 +230,65 @@ def admin_dashboard(request):
         messages.error(request, "Accès refusé : réservé aux administrateurs.")
         return redirect("galerie:home")
 
+    # Statistiques générales
+    total_oeuvres = Oeuvre.objects.count()
+    total_artistes = Artiste.objects.count()
+    total_utilisateurs = Utilisateur.objects.count()
+    total_commandes = Commande.objects.count()
+    
+    # Revenu total
+    total_revenue = sum(cmd.montant_total for cmd in Commande.objects.all()) if Commande.objects.exists() else 0
+    
+    # Oeuvres en attente
     oeuvres_attente = (
         Oeuvre.objects.filter(statut=Oeuvre.Statut.EN_ATTENTE)
         .select_related("artiste")
         .order_by("-date_soumission")
     )
-    return render(request, "galerie/admin_dashboard.html", {"oeuvres_attente": oeuvres_attente})
+    oeuvres_attente_count = oeuvres_attente.count()
+    
+    # Top 5 artistes par nombre d'oeuvres
+    top_artistes = (
+        Artiste.objects.annotate(nb_oeuvres=models.Count('oeuvres'))
+        .order_by('-nb_oeuvres')[:5]
+    )
+    
+    # Top 5 oeuvres les plus vendues
+    top_oeuvres = (
+        Oeuvre.objects.annotate(nb_ventes=Count('lignes_commande'))
+        .order_by('-nb_ventes')[:5]
+    )
+    
+    # Statut des commandes
+    commandes_en_cours = Commande.objects.filter(statut=Commande.Statut.EN_COURS).count()
+    commandes_payees = Commande.objects.filter(statut=Commande.Statut.PAYEE).count()
+    commandes_validees = Commande.objects.filter(statut=Commande.Statut.VALIDEE).count()
+    
+    # Dernières commandes
+    dernieres_commandes = Commande.objects.order_by('-date_commande')[:5]
+    
+    # Statistiques utilisateurs
+    new_users_count = Utilisateur.objects.filter(
+        date_joined__gte=timezone.now() - timedelta(days=30)
+    ).count()
+    
+    context = {
+        "oeuvres_attente": oeuvres_attente,
+        "total_oeuvres": total_oeuvres,
+        "total_artistes": total_artistes,
+        "total_utilisateurs": total_utilisateurs,
+        "total_commandes": total_commandes,
+        "total_revenue": total_revenue,
+        "oeuvres_attente_count": oeuvres_attente_count,
+        "top_artistes": top_artistes,
+        "top_oeuvres": top_oeuvres,
+        "commandes_en_cours": commandes_en_cours,
+        "commandes_payees": commandes_payees,
+        "commandes_validees": commandes_validees,
+        "dernieres_commandes": dernieres_commandes,
+        "new_users_count": new_users_count,
+    }
+    return render(request, "galerie/dashboard/admin_dashboard.html", context)
 
 
 def admin_validation_list(request):
@@ -220,7 +302,7 @@ def admin_validation_list(request):
         .select_related("artiste")
         .order_by("-date_soumission")
     )
-    return render(request, "galerie/admin_validation_list.html", {"oeuvres_attente": oeuvres_attente})
+    return render(request, "galerie/orders/admin_validation_list.html", {"oeuvres_attente": oeuvres_attente})
 
 
 # ======================
@@ -228,7 +310,7 @@ def admin_validation_list(request):
 # ======================
 class OeuvreListView(ListView):
     model = Oeuvre
-    template_name = "galerie/oeuvres_list.html"
+    template_name = "galerie/shop/oeuvres_list.html"
     context_object_name = "oeuvres"
     paginate_by = 12
 
@@ -326,7 +408,7 @@ def oeuvres_list(request):
 
     return render(
         request,
-        "galerie/oeuvres_list.html",
+        "galerie/shop/oeuvres_list.html",
         {
             "oeuvres": oeuvres,
             "categories": categories,
@@ -345,7 +427,7 @@ def oeuvres_list(request):
 
 def oeuvre_detail(request, pk):
     oeuvre = get_object_or_404(Oeuvre, pk=pk)
-    return render(request, "galerie/oeuvre_detail.html", {"oeuvre": oeuvre})
+    return render(request, "galerie/shop/oeuvre_detail.html", {"oeuvre": oeuvre})
 
 
 # ======================
@@ -375,7 +457,21 @@ def expositions_list(request):
     if date_to:
         qs = qs.filter(date_fin__lte=date_to)
 
-    return render(request, "galerie/expositions_list.html", {"expositions": qs})
+    return render(request, "galerie/shop/expositions_list.html", {"expositions": qs})
+
+
+def exposition_detail(request, pk):
+    """Affiche les détails d'une exposition"""
+    exposition = get_object_or_404(Exposition, pk=pk)
+    oeuvres = exposition.oeuvres.all()
+    tickets = exposition.tickets.all() if hasattr(exposition, 'tickets') else []
+    
+    context = {
+        "exposition": exposition,
+        "oeuvres": oeuvres,
+        "tickets": tickets,
+    }
+    return render(request, "galerie/shop/exposition_detail.html", context)
 
 
 # ======================
@@ -402,7 +498,7 @@ def oeuvre_create(request):
 
     return render(
         request,
-        "galerie/oeuvre_form.html",
+        "galerie/shop/oeuvre_form.html",
         {"form": form, "categories": Categorie.objects.all()},
     )
 
@@ -429,7 +525,7 @@ def oeuvre_update(request, pk):
 
     return render(
         request,
-        "galerie/oeuvre_form.html",
+        "galerie/shop/oeuvre_form.html",
         {"form": form, "categories": Categorie.objects.all()},
     )
 
@@ -471,19 +567,34 @@ def get_or_create_panier(user):
 
 def cart_detail(request):
     """
-    Vue pour afficher le panier stocké en localStorage.
-    Parse les données JSON du localStorage depuis le template.
+    Vue pour afficher le panier de l'utilisateur stocké en base de données.
+    Utilise le modèle Panier lié à l'utilisateur.
     """
-    # Contexte par défaut (panier vide)
+    from decimal import Decimal
+    
+    if not request.user.is_authenticated:
+        # Rediriger vers login si non authentifié
+        return redirect("login")
+    
+    panier = get_or_create_panier(request.user)
+    items = panier.items.all()
+    
+    # Calculer les totaux
+    subtotal = sum(item.quantite * item.oeuvre.prix for item in items) or Decimal('0.00')
+    shipping = Decimal('5.00') if subtotal > 0 else Decimal('0.00')
+    tax = (subtotal + shipping) * Decimal('0.20')  # TVA 20%
+    total = subtotal + shipping + tax
+    
     context = {
-        "cart_items": [],
-        "subtotal": 0.00,
-        "shipping": 5.00,
-        "tax": 0.00,
-        "total": 5.00,
+        "panier": panier,
+        "cart_items": items,
+        "subtotal": subtotal,
+        "shipping": shipping,
+        "tax": tax,
+        "total": total,
     }
     
-    return render(request, "galerie/cart_detail.html", context)
+    return render(request, "galerie/cart/cart_detail.html", context)
 
 
 @login_required
@@ -509,6 +620,7 @@ def cart_add(request, oeuvre_id):
 
 
 @login_required
+@login_required
 def cart_remove(request, oeuvre_id):
     panier = get_or_create_panier(request.user)
     item = get_object_or_404(PanierItem, panier=panier, oeuvre_id=oeuvre_id)
@@ -518,180 +630,127 @@ def cart_remove(request, oeuvre_id):
 
 
 @login_required
-@transaction.atomic
+def cart_clear(request):
+    """Vider tout le panier"""
+    panier = get_or_create_panier(request.user)
+    panier.items.all().delete()
+    messages.success(request, "Panier vidé.")
+    return redirect("galerie:cart_detail")
+
+
 @login_required
 @transaction.atomic
 def checkout(request):
-    """Créer une commande depuis le panier localStorage"""
-    import json
+    """Créer une commande depuis le panier de la base de données"""
+    from decimal import Decimal
     
-    # Récupérer le panier depuis la requête JSON
-    try:
-        data = json.loads(request.body) if request.body else {}
-        cart_data = data.get('cart', [])
-    except:
-        cart_data = []
+    if request.method != 'POST':
+        messages.error(request, "Méthode non autorisée.")
+        return redirect("galerie:cart_detail")
     
-    if not cart_data:
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return JsonResponse({
-                'success': False,
-                'error': 'Votre panier est vide.'
-            }, status=400)
+    # Récupérer le panier de l'utilisateur
+    panier = get_or_create_panier(request.user)
+    items = panier.items.all()
+    
+    if not items.exists():
         messages.error(request, "Votre panier est vide.")
         return redirect("galerie:cart_detail")
     
     # Vérifier les stocks
-    for item in cart_data:
-        try:
-            oeuvre = Oeuvre.objects.get(pk=item['id'])
-            if item['quantity'] > oeuvre.stock:
-                error_msg = f"Stock insuffisant pour: {oeuvre.titre}"
-                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                    return JsonResponse({
-                        'success': False,
-                        'error': error_msg
-                    }, status=400)
-                messages.error(request, error_msg)
-                return redirect("galerie:cart_detail")
-        except Oeuvre.DoesNotExist:
-            error_msg = f"Œuvre introuvable (ID: {item['id']})"
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({
-                    'success': False,
-                    'error': error_msg
-                }, status=404)
+    for item in items:
+        if item.quantite > item.oeuvre.stock:
+            error_msg = f"Stock insuffisant pour: {item.oeuvre.titre}"
             messages.error(request, error_msg)
             return redirect("galerie:cart_detail")
     
+    # Calculer le total
+    subtotal = sum(item.quantite * item.oeuvre.prix for item in items) or Decimal('0.00')
+    shipping = Decimal('5.00') if subtotal > 0 else Decimal('0.00')
+    tax = (subtotal + shipping) * Decimal('0.20')
+    total = subtotal + shipping + tax
+    
     # Créer la commande
-    total = sum(item['price'] * item['quantity'] for item in cart_data)
     commande = Commande.objects.create(
-        client=request.user,
-        total=total
+        utilisateur=request.user,
+        montant_total=total
     )
     
     # Créer les lignes de commande et mettre à jour le stock
-    for item in cart_data:
-        oeuvre = Oeuvre.objects.get(pk=item['id'])
+    for item in items:
         LigneCommande.objects.create(
             commande=commande,
-            oeuvre=oeuvre,
-            quantite=item['quantity'],
-            prix_unitaire=item['price'],
+            oeuvre=item.oeuvre,
+            quantite=item.quantite,
+            prix_unitaire=item.oeuvre.prix,
         )
-        oeuvre.stock -= item['quantity']
-        oeuvre.save(update_fields=["stock"])
+        item.oeuvre.stock -= item.quantite
+        item.oeuvre.save(update_fields=["stock"])
     
-    # Vider le panier de la session
-    if 'cart' in request.session:
-        del request.session['cart']
+    # Vider le panier
+    panier.items.all().delete()
     
-    # Retourner JSON pour les requêtes AJAX
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return JsonResponse({
-            'success': True,
-            'message': f'Commande #{commande.id} créée',
-            'redirect_url': reverse('galerie:order_pay', kwargs={'order_id': commande.id})
-        })
-    
-    # Sinon redirection classique
     messages.success(request, f"Commande #{commande.id} créée. Procédez au paiement.")
     return redirect("galerie:order_pay", order_id=commande.id)
 
 
 @login_required
 def orders_list(request):
-    commandes = Commande.objects.filter(client=request.user).order_by("-date_creation")
-    return render(request, "galerie/orders_list.html", {"commandes": commandes})
+    commandes = Commande.objects.filter(utilisateur=request.user).order_by("-date_commande")
+    return render(request, "galerie/orders/orders_list.html", {"commandes": commandes})
 
 
 @login_required
 def order_pay(request, order_id):
-    import stripe
-    from django.conf import settings
+    """Page de paiement avec formulaire de coordonnées bancaires"""
     
-    stripe.api_key = settings.STRIPE_SECRET_KEY
-    
-    commande = get_object_or_404(Commande, pk=order_id, client=request.user)
+    commande = get_object_or_404(Commande, pk=order_id, utilisateur=request.user)
 
-    if commande.statut != Commande.Statut.EN_ATTENTE:
+    if commande.statut != Commande.Statut.EN_COURS:
         messages.info(request, "Cette commande n'est pas payable.")
         return redirect("galerie:orders_list")
 
     if request.method == "POST":
-        try:
-            # Créer une intention de paiement Stripe
-            intent = stripe.PaymentIntent.create(
-                amount=int(commande.total * 100),  # Montant en centimes
-                currency="eur",
-                metadata={
-                    "order_id": commande.id,
-                    "user_id": request.user.id,
-                }
-            )
-            
+        form = PaiementForm(request.POST)
+        if form.is_valid():
             # Sauvegarder les détails du paiement
-            Paiement.objects.update_or_create(
-                commande=commande,
-                defaults={
-                    "methode": "stripe",
-                    "statut": Paiement.Statut.EN_ATTENTE,
-                    "reference": intent.id,
-                },
-            )
-            
-            context = {
-                "commande": commande,
-                "client_secret": intent.client_secret,
-                "stripe_public_key": settings.STRIPE_PUBLIC_KEY,
-            }
-            return render(request, "galerie/order_pay.html", context)
-        except Exception as e:
-            messages.error(request, f"Erreur lors du paiement: {str(e)}")
-            return redirect("galerie:orders_list")
+            try:
+                Paiement.objects.update_or_create(
+                    commande=commande,
+                    defaults={
+                        "methode": Paiement.Methode.CARTE_BANCAIRE,
+                        "statut": Paiement.Statut.SUCCES,
+                        "montant": commande.montant_total,
+                        "reference": f"PAIEMENT-{commande.id}-{request.user.id}",
+                    },
+                )
+                
+                # Marquer la commande comme payée
+                commande.statut = Commande.Statut.PAYEE
+                commande.save(update_fields=["statut"])
+                
+                messages.success(request, "✅ Paiement accepté! Votre commande a été confirmée.")
+                return redirect("galerie:payment_success", order_id=commande.id)
+            except Exception as e:
+                messages.error(request, f"Erreur lors de l'enregistrement du paiement: {str(e)}")
+                return redirect("galerie:orders_list")
+    else:
+        form = PaiementForm()
 
+    # Récupérer les articles de la commande
+    lignes = LigneCommande.objects.filter(commande=commande).select_related("oeuvre")
+    
     context = {
         "commande": commande,
-        "stripe_public_key": settings.STRIPE_PUBLIC_KEY,
+        "form": form,
+        "lignes": lignes,
     }
-    return render(request, "galerie/order_pay.html", context)
-
-
-@login_required
-def payment_confirm(request, order_id):
-    """Endpoint AJAX pour confirmer la création d'une intention de paiement"""
-    import stripe
-    import json
-    from django.conf import settings
-    
-    if request.method != "POST":
-        return JsonResponse({"error": "Method not allowed"}, status=405)
-    
-    try:
-        stripe.api_key = settings.STRIPE_SECRET_KEY
-        commande = get_object_or_404(Commande, pk=order_id, client=request.user)
-        
-        # Créer une intention de paiement
-        intent = stripe.PaymentIntent.create(
-            amount=int(commande.total * 100),
-            currency="eur",
-            metadata={"order_id": commande.id},
-        )
-        
-        return JsonResponse({"client_secret": intent.client_secret})
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+    return render(request, "galerie/payment/order_pay.html", context)
 
 
 @login_required
 def payment_success(request, order_id):
     """Page de succès après paiement"""
-    import stripe
-    from django.conf import settings
-    
-    stripe.api_key = settings.STRIPE_SECRET_KEY
-    commande = get_object_or_404(Commande, pk=order_id, client=request.user)
+    commande = get_object_or_404(Commande, pk=order_id, utilisateur=request.user)
     
     # Mettre à jour le statut de la commande
     commande.statut = Commande.Statut.PAYEE
@@ -709,14 +768,14 @@ def payment_success(request, order_id):
         panier.items.all().delete()
     
     messages.success(request, "✅ Paiement réussi! Votre commande a été confirmée.")
-    return render(request, "galerie/payment_success.html", {"commande": commande})
+    return render(request, "galerie/payment/payment_success.html", {"commande": commande})
 
 
 @login_required
 def order_cancel(request, order_id):
-    commande = get_object_or_404(Commande, pk=order_id, client=request.user)
+    commande = get_object_or_404(Commande, pk=order_id, utilisateur=request.user)
 
-    if commande.statut != Commande.Statut.EN_ATTENTE:
+    if commande.statut != Commande.Statut.EN_COURS:
         messages.error(request, "Annulation impossible (commande déjà payée/annulée).")
         return redirect("galerie:orders_list")
 
@@ -725,3 +784,115 @@ def order_cancel(request, order_id):
 
     messages.success(request, "Commande annulée (en attente de règlement par admin).")
     return redirect("galerie:orders_list")
+
+
+# ======================
+# NOTIFICATIONS
+# ======================
+@login_required
+def notifications_list(request):
+    """Afficher les notifications de l'utilisateur"""
+    notifications = Notification.objects.filter(
+        utilisateur=request.user
+    ).order_by("-date_creation")
+    
+    # Marquer les notifications comme lues en masse
+    unread = notifications.filter(statut=Notification.Statut.NON_LUE)
+    if request.GET.get("mark_read") == "1":
+        unread.update(statut=Notification.Statut.LUE, date_lecture=timezone.now())
+    
+    unread_count = notifications.filter(statut=Notification.Statut.NON_LUE).count()
+    
+    return render(
+        request,
+        "galerie/notifications/notifications_list.html",
+        {
+            "notifications": notifications,
+            "unread_count": unread_count,
+        },
+    )
+
+
+@login_required
+def notification_mark_read(request, pk):
+    """Marquer une notification comme lue"""
+    notification = get_object_or_404(Notification, pk=pk, utilisateur=request.user)
+    notification.marquer_comme_lue()
+    
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({"success": True})
+    
+    return redirect("galerie:notifications_list")
+
+
+@login_required
+def notification_delete(request, pk):
+    """Supprimer une notification"""
+    notification = get_object_or_404(Notification, pk=pk, utilisateur=request.user)
+    notification.delete()
+    
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({"success": True})
+    
+    messages.info(request, "Notification supprimée.")
+    return redirect("galerie:notifications_list")
+
+
+@login_required
+def notification_send(request):
+    """Page pour l'admin pour envoyer une notification"""
+    if not (request.user.is_staff or request.user.is_superuser):
+        messages.error(request, "Accès refusé : réservé aux administrateurs.")
+        return redirect("galerie:home")
+    
+    if request.method == "POST":
+        titre = request.POST.get("titre", "").strip()
+        message = request.POST.get("message", "").strip()
+        type_notif = request.POST.get("type_notif", "information").strip()
+        destinataires = request.POST.getlist("destinataires")  # IDs des utilisateurs
+        exposition_id = request.POST.get("exposition", None)
+        
+        if not titre or not message:
+            messages.error(request, "Le titre et le message sont obligatoires.")
+            return redirect("galerie:notification_send")
+        
+        if not destinataires:
+            messages.error(request, "Vous devez sélectionner au moins un destinataire.")
+            return redirect("galerie:notification_send")
+        
+        exposition = None
+        if exposition_id:
+            try:
+                exposition = Exposition.objects.get(pk=exposition_id)
+            except Exposition.DoesNotExist:
+                messages.error(request, "L'exposition sélectionnée n'existe pas.")
+                return redirect("galerie:notification_send")
+        
+        # Créer une notification pour chaque destinataire
+        count = 0
+        for user_id in destinataires:
+            try:
+                user = Utilisateur.objects.get(pk=user_id)
+                creer_notification(
+                    utilisateur=user,
+                    titre=titre,
+                    message=message,
+                    type_notif=type_notif,
+                    exposition=exposition,
+                )
+                count += 1
+            except Utilisateur.DoesNotExist:
+                continue
+        
+        messages.success(request, f"✅ {count} notification(s) envoyée(s).")
+        return redirect("galerie:admin_dashboard")
+    
+    # GET request - afficher le formulaire
+    all_users = Utilisateur.objects.all().order_by("username")
+    expositions = Exposition.objects.all()
+    
+    context = {
+        "all_users": all_users,
+        "expositions": expositions,
+    }
+    return render(request, "galerie/notifications/notification_send.html", context)

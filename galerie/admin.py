@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from .models import (
     Utilisateur, Artiste, Categorie, Oeuvre, 
     Lieu, Exposition, Commande, LigneCommande, Paiement,
-    Panier, PanierItem
+    Panier, PanierItem, Notification
 )
 
 # ============================================
@@ -53,7 +53,7 @@ class CategorieAdmin(admin.ModelAdmin):
     search_fields = ['nom_categorie']
     
     def get_nombre_oeuvres(self, obj):
-        return obj.oeuvre_set.count()
+        return obj.oeuvres.count()
     get_nombre_oeuvres.short_description = 'Nombre d\'œuvres'
 
 
@@ -118,8 +118,10 @@ class CommandeAdmin(admin.ModelAdmin):
 
 @admin.register(Paiement)
 class PaiementAdmin(admin.ModelAdmin):
-    list_display = ['commande', 'mode_paiement', 'montant', 'date_paiement']
-    list_filter = ['mode_paiement', 'date_paiement']
+    list_display = ['commande', 'methode', 'statut', 'montant', 'date_paiement']
+    list_filter = ['methode', 'statut', 'date_paiement']
+    search_fields = ['commande__id', 'reference']
+    readonly_fields = ['date_paiement']
 
 
 # ============================================
@@ -166,3 +168,38 @@ class PanierItemAdmin(admin.ModelAdmin):
     def get_sous_total(self, obj):
         return f"{obj.sous_total:.2f}€"
     get_sous_total.short_description = 'Sous-total'
+
+
+# ============================================
+# 10. ADMIN NOTIFICATION
+# ============================================
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ['titre', 'utilisateur', 'type_notif', 'get_statut_badge', 'date_creation']
+    list_filter = ['statut', 'type_notif', 'date_creation']
+    search_fields = ['titre', 'utilisateur__username', 'message']
+    readonly_fields = ['date_creation', 'date_lecture']
+    
+    fieldsets = (
+        ('Informations', {
+            'fields': ('titre', 'message', 'type_notif', 'utilisateur')
+        }),
+        ('Exposition', {
+            'fields': ('exposition',),
+            'classes': ('collapse',)
+        }),
+        ('Statut', {
+            'fields': ('statut', 'date_creation', 'date_lecture')
+        }),
+    )
+    
+    def get_statut_badge(self, obj):
+        colors = {
+            'non_lue': 'red',
+            'lue': 'green',
+        }
+        color = colors.get(obj.statut, 'gray')
+        return f'<span style="background-color: {color}; color: white; padding: 3px 8px; border-radius: 3px; font-weight: bold;">{obj.get_statut_display()}</span>'
+    get_statut_badge.short_description = 'Statut'
+    get_statut_badge.allow_tags = True

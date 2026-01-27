@@ -78,3 +78,108 @@ class OeuvreForm(forms.ModelForm):
         widgets = {
             "description": forms.Textarea(attrs={"rows": 4}),
         }
+
+
+class PaiementForm(forms.Form):
+    """Formulaire pour les informations de paiement"""
+    
+    # Adresse de facturation
+    adresse = forms.CharField(
+        label="Adresse",
+        max_length=255,
+        required=True,
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "123 Rue de la Paix",
+            "type": "text"
+        })
+    )
+    
+    code_postal = forms.CharField(
+        label="Code Postal",
+        max_length=10,
+        required=True,
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "75001",
+            "type": "text"
+        })
+    )
+    
+    ville = forms.CharField(
+        label="Ville",
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "Paris",
+            "type": "text"
+        })
+    )
+    
+    pays = forms.CharField(
+        label="Pays",
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "France",
+            "type": "text"
+        })
+    )
+    
+    # Informations de paiement (Carte bancaire)
+    numero_carte = forms.CharField(
+        label="Numéro de carte",
+        max_length=16,
+        required=True,
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "1234 5678 9012 3456",
+            "maxlength": "16",
+            "type": "text"
+        })
+    )
+    
+    nom_titulaire = forms.CharField(
+        label="Nom du titulaire",
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "Jean Dupont",
+            "type": "text"
+        })
+    )
+    
+    date_expiration = forms.CharField(
+        label="Date d'expiration (MM/YY)",
+        max_length=5,
+        required=True,
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "12/25",
+            "maxlength": "5",
+            "type": "text"
+        })
+    )
+    
+    cvv = forms.CharField(
+        label="CVV",
+        max_length=4,
+        required=True,
+        widget=forms.PasswordInput(attrs={
+            "class": "form-control",
+            "placeholder": "123",
+            "maxlength": "4"
+        })
+    )
+    
+    # Conditions
+    accepte_conditions = forms.BooleanField(
+        label="J'accepte les conditions de paiement",
+        required=True,
+        widget=forms.CheckboxInput(attrs={
+            "class": "form-check-input"
+        })
+    )

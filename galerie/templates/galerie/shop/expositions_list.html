@@ -1,0 +1,539 @@
+{% extends 'galerie/base.html' %}
+{% load static %}
+
+{% block title %}Expositions | GalerieVirtuelle{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: 100vh;
+    padding-top: 80px;
+  }
+
+  .expositions-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+  }
+
+  /* HERO SECTION */
+  .expo-hero {
+    background: linear-gradient(135deg, #243748 0%, #4B749F 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 3rem;
+    margin-bottom: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2rem;
+    box-shadow: 0 8px 32px rgba(36, 55, 72, 0.15);
+    animation: fadeInDown 0.6s ease;
+  }
+
+  @media (max-width: 768px) {
+    .expo-hero {
+      padding: 2rem;
+    }
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .expo-title {
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    font-size: 2.5rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .expo-subtitle {
+    opacity: 0.85;
+    font-size: 1.1rem;
+    margin: 0;
+  }
+
+  .expo-count {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 0.8rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 700;
+    white-space: nowrap;
+    backdrop-filter: blur(10px);
+    display: inline-block;
+    font-size: 1rem;
+  }
+
+  /* FILTER CARD */
+  .expo-filter-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2.5rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    animation: fadeInUp 0.6s ease;
+  }
+
+  .expo-filter-card .form-label {
+    color: #243748;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.6rem;
+    display: block;
+  }
+
+  .expo-filter-card .form-control,
+  .expo-filter-card .form-select {
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 0.8rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+  }
+
+  .expo-filter-card .form-control:hover,
+  .expo-filter-card .form-select:hover {
+    border-color: #4B749F;
+    background-color: white;
+  }
+
+  .expo-filter-card .form-control:focus,
+  .expo-filter-card .form-select:focus {
+    border-color: #4B749F;
+    background-color: white;
+    box-shadow: 0 0 0 4px rgba(75, 116, 159, 0.1);
+    outline: none;
+  }
+
+  .btn-gradient {
+    background: linear-gradient(135deg, #4B749F, #243748);
+    border: none;
+    color: white;
+    border-radius: 10px;
+    font-weight: 700;
+    padding: 0.85rem 1.5rem;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    box-shadow: 0 4px 15px rgba(75, 116, 159, 0.2);
+  }
+
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(75, 116, 159, 0.35);
+    color: white;
+  }
+
+  .btn-gradient:active {
+    transform: translateY(0);
+  }
+
+  .btn-outline-light {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-outline-light:hover {
+    border-color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+  }
+
+  /* GRID & CARDS */
+  .expositions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  @media (max-width: 768px) {
+    .expositions-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+  }
+
+  .expo-card {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .expo-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+  }
+
+  /* IMAGE WRAPPER */
+  .expo-img-wrap {
+    position: relative;
+    overflow: hidden;
+    background: #f0f0f0;
+    aspect-ratio: 4/3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .expo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .expo-card:hover .expo-img {
+    transform: scale(1.08);
+  }
+
+  .expo-img-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #e9ecef 0%, #f0f0f0 100%);
+    color: #999;
+  }
+
+  /* BADGES */
+  .expo-badges-wrap {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .expo-badge {
+    background: rgba(75, 116, 159, 0.9);
+    color: white;
+    padding: 0.5rem 0.85rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  /* BODY */
+  .expo-body {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .expo-name {
+    color: #243748;
+    font-weight: 700;
+    font-size: 1.15rem;
+    margin: 0 0 0.75rem 0;
+    line-height: 1.4;
+  }
+
+  .expo-lieu {
+    color: #4B749F;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  .expo-desc {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+  }
+
+  .expo-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e0e0e0;
+    font-size: 0.9rem;
+  }
+
+  .expo-meta-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .expo-meta-label {
+    color: #999;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+  }
+
+  .expo-meta-value {
+    color: #243748;
+    font-weight: 600;
+  }
+
+  .expo-footer {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .btn-view {
+    flex: 1;
+    background: linear-gradient(135deg, #4B749F, #243748);
+    color: white;
+    border: none;
+    padding: 0.65rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-view:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(75, 116, 159, 0.3);
+    color: white;
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .empty-state h5 {
+    color: #243748;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+
+  .empty-state p {
+    color: #999;
+    margin: 0;
+  }
+</style>
+
+<div class="expositions-container">
+  <!-- HERO SECTION -->
+  <section class="expo-hero">
+    <div>
+      <h1 class="expo-title"><i class="bi bi-palette-fill"></i> Expositions</h1>
+      <p class="expo-subtitle">Explorez, filtrez et découvrez les expositions disponibles.</p>
+    </div>
+
+    <div class="expo-count">
+      {{ expositions|length }} résultat{{ expositions|length|pluralize }}
+    </div>
+  </section>
+
+  <!-- FILTER SECTION -->
+  <div class="expo-filter-card">
+    <form method="get" class="row g-3 align-items-end">
+      <div class="col-12 col-md-6 col-lg-3">
+        <label class="form-label">Mot clé</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input
+            type="search"
+            name="q"
+            class="form-control"
+            placeholder="Nom ou description..."
+            value="{{ request.GET.q|default:'' }}"
+          >
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <label class="form-label">Du (date début)</label>
+        <input
+          type="date"
+          name="date_from"
+          class="form-control"
+          value="{{ request.GET.date_from|default:'' }}"
+        >
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <label class="form-label">Au (date fin)</label>
+        <input
+          type="date"
+          name="date_to"
+          class="form-control"
+          value="{{ request.GET.date_to|default:'' }}"
+        >
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <label class="form-label">Lieu</label>
+        <input
+          type="text"
+          name="lieu"
+          class="form-control"
+          placeholder="Casablanca..."
+          value="{{ request.GET.lieu|default:'' }}"
+        >
+      </div>
+
+      <div class="col-12 d-flex flex-wrap gap-2">
+        <button class="btn btn-gradient" type="submit"><i class="bi bi-funnel"></i> Filtrer</button>
+        <a class="btn btn-outline-light" href="{% url 'galerie:expositions_list' %}"><i class="bi bi-arrow-counterclockwise"></i> Reset</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- EXPOSITIONS GRID -->
+  <div class="expositions-grid">
+    {% for expo in expositions %}
+      <div class="expo-card">
+        <!-- IMAGE -->
+        <div class="expo-img-wrap">
+          {% if expo.affiche %}
+            <img src="{{ expo.affiche.url }}" class="expo-img" alt="{{ expo.nom_exposition }}">
+          {% else %}
+            <div class="expo-img expo-img-placeholder d-flex align-items-center justify-content-center">
+              <span class="text-muted">Aucune affiche</span>
+            </div>
+          {% endif %}
+
+          <!-- STATUT BADGE -->
+          <div class="expo-badges-wrap">
+            {% if expo.statut == 'à venir' %}
+              <span class="badge expo-badge bg-info">À venir</span>
+            {% elif expo.statut == 'en cours' %}
+              <span class="badge expo-badge bg-success">✓ En cours</span>
+            {% else %}
+              <span class="badge expo-badge bg-secondary">✓ Terminée</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- BODY -->
+        <div class="expo-body">
+          <h5 class="expo-name">{{ expo.nom_exposition }}</h5>
+          
+          {% if expo.lieu %}
+            <p class="expo-lieu">
+              📍 {{ expo.lieu.ville }}
+            </p>
+          {% endif %}
+
+          <p class="expo-desc">{{ expo.description|truncatewords:20 }}</p>
+
+          <!-- META INFO -->
+          <div class="expo-meta">
+            <div class="expo-meta-item">
+              <span class="expo-meta-label">Début</span>
+              <span class="expo-meta-value">{{ expo.date_debut|date:"d/m/Y" }}</span>
+            </div>
+            <div class="expo-meta-item">
+              <span class="expo-meta-label">Fin</span>
+              <span class="expo-meta-value">{{ expo.date_fin|date:"d/m/Y" }}</span>
+            </div>
+            {% if expo.lieu %}
+              <div class="expo-meta-item">
+                <span class="expo-meta-label">Lieu</span>
+                <span class="expo-meta-value">{{ expo.lieu.nom_lieu }}</span>
+              </div>
+            {% endif %}
+            
+            <!-- Nombre d'œuvres -->
+            {% if expo.oeuvres.count %}
+              <div class="expo-meta-item">
+                <span class="expo-meta-label">Œuvres</span>
+                <span class="expo-meta-value">{{ expo.oeuvres.count }} œuvre(s)</span>
+              </div>
+            {% endif %}
+          </div>
+          
+          <!-- OEUVRES PREVIEW -->
+          {% if expo.oeuvres.all %}
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e0e0e0;">
+              <p style="color: #666; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">📌 Œuvres en exposition:</p>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                {% for oeuvre in expo.oeuvres.all|slice:":3" %}
+                  <span style="background: #f0f0f0; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.8rem; color: #666;">
+                    {{ oeuvre.titre|truncatewords:2 }}
+                  </span>
+                {% endfor %}
+                {% if expo.oeuvres.count > 3 %}
+                  <span style="background: #f0f0f0; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.8rem; color: #666;">
+                    +{{ expo.oeuvres.count|add:"-3" }}
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- FOOTER -->
+        <div class="expo-footer">
+          <div style="display: flex; gap: 0.75rem; width: 100%;">
+            <a href="{% url 'galerie:exposition_detail' expo.id %}" class="btn-view" style="flex: 1;">
+              <i class="bi bi-eye"></i> Détails
+            </a>
+            {% if expo.statut == 'à venir' %}
+              <button class="btn-view" style="flex: 1; background: #27ae60; border-color: #27ae60;" onclick="alert('Billetterie bientôt disponible!')">
+                <i class="bi bi-ticket-perforated"></i> Tickets
+              </button>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div style="grid-column: 1 / -1;">
+        <div class="empty-state">
+          <h5>🎨 Aucune exposition trouvée</h5>
+          <p>Essayez de modifier les filtres ou de réinitialiser la recherche.</p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

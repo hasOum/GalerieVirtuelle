@@ -1,0 +1,162 @@
+{% extends 'galerie/base.html' %}
+{% load static %}
+
+{% block title %}Panier | GalerieVirtuelle{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'galerie/css/cart.css' %}">
+
+<div class="container py-5">
+  {# Hero #}
+  <div class="cart-hero mb-5">
+    <h1 class="cart-title">
+      <i class="bi bi-bag-check me-2"></i>Mon Panier
+    </h1>
+    <p class="cart-subtitle">Gérez vos sélections d'œuvres d'art</p>
+  </div>
+
+  <!-- Panier depuis la base de données -->
+  {% if cart_items %}
+    <div class="row g-4">
+      <!-- ARTICLES DU PANIER -->
+      <div class="col-lg-8">
+        <div class="cart-items-section">
+          <h2 class="section-title mb-4">
+            <i class="bi bi-list-check me-2"></i>{{ cart_items|length }} article{{ cart_items|length|pluralize }}
+          </h2>
+          
+          <div class="cart-items-list">
+            {% for item in cart_items %}
+              <div class="cart-item" data-item-id="{{ item.id }}">
+                <div class="cart-item-image">
+                  {% if item.oeuvre.image %}
+                    <img src="{{ item.oeuvre.image.url }}" alt="{{ item.oeuvre.titre }}" class="item-img" style="width:100%; height:100%; object-fit:cover;">
+                  {% else %}
+                    <div class="placeholder-img" style="background: linear-gradient(135deg, #4B749F, #243748); width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                      <span class="item-title-overlay">{{ item.oeuvre.titre|truncatewords:3 }}</span>
+                    </div>
+                  {% endif %}
+                </div>
+
+                <div class="cart-item-details">
+                  <h4 class="item-title">{{ item.oeuvre.titre }}</h4>
+                  <div class="item-artist">{{ item.oeuvre.artiste.nom }}</div>
+                  <div class="item-price">{{ item.oeuvre.prix|floatformat:2 }}€</div>
+                </div>
+
+                <div class="cart-item-quantity">
+                  <label class="quantity-label">Quantité:</label>
+                  <div class="quantity-controls">
+                    <a href="{% url 'galerie:cart_remove' item.oeuvre.id %}" class="qty-btn" title="Diminuer">
+                      <i class="bi bi-dash"></i>
+                    </a>
+                    <input type="number" class="qty-input" value="{{ item.quantite }}" min="1" readonly>
+                    <a href="{% url 'galerie:cart_add' item.oeuvre.id %}" class="qty-btn" title="Augmenter">
+                      <i class="bi bi-plus"></i>
+                    </a>
+                  </div>
+                </div>
+
+                <div class="cart-item-total">
+                  <div class="total-label">Sous-total</div>
+                  <div class="total-price">{{ item.sous_total|floatformat:2 }}€</div>
+                </div>
+
+                <form method="POST" action="{% url 'galerie:cart_remove' item.oeuvre.id %}" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="cart-item-remove" title="Supprimer">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </form>
+              </div>
+            {% endfor %}
+          </div>
+
+          <div class="cart-actions mt-4">
+            <a href="{% url 'galerie:oeuvres_list' %}" class="btn btn-outline-primary">
+              <i class="bi bi-arrow-left me-2"></i>Continuer vos achats
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- RÉSUMÉ DE COMMANDE -->
+      <div class="col-lg-4">
+        <div class="cart-summary sticky-top" style="top: 100px;">
+          <h2 class="section-title mb-4">
+            <i class="bi bi-receipt me-2"></i>Résumé de la commande
+          </h2>
+
+          <div class="summary-details">
+            <div class="summary-row">
+              <span class="summary-label">Sous-total:</span>
+              <span class="summary-value">{{ subtotal|floatformat:2 }}€</span>
+            </div>
+
+            <div class="summary-row">
+              <span class="summary-label">Frais de port:</span>
+              <span class="summary-value">{{ shipping|floatformat:2 }}€</span>
+            </div>
+
+            <div class="summary-row">
+              <span class="summary-label">TVA (20%):</span>
+              <span class="summary-value">{{ tax|floatformat:2 }}€</span>
+            </div>
+
+            <div class="summary-row summary-total">
+              <span class="summary-label">Total:</span>
+              <span class="summary-total-value">{{ total|floatformat:2 }}€</span>
+            </div>
+          </div>
+
+          <div class="summary-actions mt-4">
+            <form method="POST" action="{% url 'galerie:checkout' %}">
+              {% csrf_token %}
+              <input type="hidden" name="cart_panier_id" value="{{ panier.id }}">
+              <button type="submit" class="btn btn-primary w-100 btn-lg mb-2">
+                <i class="bi bi-credit-card me-2"></i>Procéder au paiement
+              </button>
+            </form>
+
+            <form method="POST" action="{% url 'galerie:cart_clear' %}" style="display: inline-block; width: 100%;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-secondary w-100" onclick="return confirm('Êtes-vous sûr de vouloir vider votre panier ?');">
+                <i class="bi bi-trash3 me-2"></i>Vider le panier
+              </button>
+            </form>
+          </div>
+
+          <div class="summary-info mt-4">
+            <div class="info-item">
+              <i class="bi bi-shield-check"></i>
+              <span>Paiement sécurisé</span>
+            </div>
+            <div class="info-item">
+              <i class="bi bi-truck"></i>
+              <span>Livraison rapide</span>
+            </div>
+            <div class="info-item">
+              <i class="bi bi-arrow-repeat"></i>
+              <span>Retour gratuit 30j</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  {% else %}
+    <!-- Panier vide -->
+    <div class="empty-cart text-center py-5">
+      <div class="empty-cart-icon mb-4">
+        <i class="bi bi-bag-x"></i>
+      </div>
+      <h3 class="mb-3">Votre panier est vide</h3>
+      <p class="text-muted mb-4">Découvrez nos magnifiques œuvres d'art et commencez à remplir votre panier!</p>
+      <a href="{% url 'galerie:oeuvres_list' %}" class="btn btn-primary btn-lg">
+        <i class="bi bi-shop me-2"></i>Explorer les œuvres
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}

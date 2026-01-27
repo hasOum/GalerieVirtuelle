@@ -1,0 +1,488 @@
+{% extends 'galerie/base.html' %}
+{% load static %}
+
+{% block title %}{{ oeuvre.titre }} | GalerieVirtuelle{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --g1: #243748;
+    --g2: #4B749F;
+    --accent: #FF6B6B;
+  }
+
+  .oeuvre-hero {
+    background: linear-gradient(90deg, var(--g1), var(--g2));
+    color: #fff;
+    border-radius: 18px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  .oeuvre-hero h1 {
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+    font-size: 2.2rem;
+  }
+
+  .oeuvre-hero p {
+    opacity: 0.9;
+    margin: 0.3rem 0;
+    font-size: 1.05rem;
+  }
+
+  .oeuvre-container {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  .oeuvre-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    padding: 2.5rem;
+    align-items: start;
+  }
+
+  .oeuvre-image-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .oeuvre-image-wrapper {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f5f5f5, #fafafa);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  .oeuvre-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .oeuvre-image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: #999;
+  }
+
+  .oeuvre-details-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .oeuvre-info-block {
+    background: #f8f9fa;
+    border-left: 4px solid var(--g2);
+    padding: 1.5rem;
+    border-radius: 8px;
+  }
+
+  .oeuvre-info-block label {
+    display: block;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: #666;
+    letter-spacing: 0.6px;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .oeuvre-info-block value {
+    display: block;
+    font-size: 1.2rem;
+    color: var(--g1);
+    font-weight: 700;
+  }
+
+  .oeuvre-price {
+    font-size: 2rem;
+    color: var(--accent);
+    font-weight: 800;
+  }
+
+  .oeuvre-stock {
+    font-size: 1.1rem;
+  }
+
+  .oeuvre-stock.in-stock {
+    color: #4CAF50;
+  }
+
+  .oeuvre-stock.out-of-stock {
+    color: var(--accent);
+  }
+
+  .oeuvre-artist {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, rgba(75, 116, 159, 0.08), rgba(36, 55, 72, 0.04));
+    border-radius: 10px;
+  }
+
+  .artist-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--g1), var(--g2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.3rem;
+  }
+
+  .artist-info strong {
+    display: block;
+    color: var(--g1);
+  }
+
+  .artist-info small {
+    color: #666;
+  }
+
+  .oeuvre-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-add-cart {
+    flex: 1;
+    background: linear-gradient(135deg, #4CAF50, #20c997);
+    color: #fff;
+    border-radius: 999px;
+    padding: 1rem 1.5rem;
+    text-decoration: none;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+  }
+
+  .btn-add-cart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(76, 175, 80, 0.35);
+    color: #fff;
+  }
+
+  .btn-back {
+    background: linear-gradient(135deg, var(--g1), var(--g2));
+    color: #fff;
+    border-radius: 999px;
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .btn-back:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(36, 55, 72, 0.35);
+    color: #fff;
+  }
+
+  .oeuvre-description {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 10px;
+    line-height: 1.6;
+    color: #333;
+  }
+
+  .oeuvre-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  .meta-item {
+    text-align: center;
+    padding: 1rem;
+    background: #f0f0f0;
+    border-radius: 10px;
+  }
+
+  .meta-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #666;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .meta-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--g1);
+  }
+
+  @media (max-width: 768px) {
+    .oeuvre-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      padding: 1.5rem;
+    }
+
+    .oeuvre-hero h1 {
+      font-size: 1.8rem;
+    }
+
+    .oeuvre-actions {
+      flex-direction: column;
+    }
+
+    .btn-add-cart {
+      width: 100%;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <!-- Back Button -->
+  <a href="{% url 'galerie:oeuvres_list' %}" class="btn-back mb-4">
+    <i class="bi bi-arrow-left"></i> Retour aux œuvres
+  </a>
+
+  <!-- Hero Section -->
+  <div class="oeuvre-hero">
+    <h1><i class="bi bi-image"></i> {{ oeuvre.titre }}</h1>
+    <p>
+      {% if oeuvre.categorie %}
+        <i class="bi bi-tag"></i> {{ oeuvre.categorie.nom_categorie }}
+      {% endif %}
+    </p>
+    {% if oeuvre.artiste %}
+      <p>
+        <i class="bi bi-palette"></i> Par <strong>{{ oeuvre.artiste.user.username }}</strong>
+      </p>
+    {% endif %}
+  </div>
+
+  <!-- Main Content -->
+  <div class="oeuvre-container">
+    <div class="oeuvre-grid">
+      <!-- Image Section -->
+      <div class="oeuvre-image-section">
+        <div class="oeuvre-image-wrapper">
+          {% if oeuvre.image %}
+            <img src="{{ oeuvre.image.url }}" alt="{{ oeuvre.titre }}" class="oeuvre-image">
+          {% else %}
+            <div class="oeuvre-image-placeholder">
+              <i class="bi bi-image" style="font-size: 3rem;"></i>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Details Section -->
+      <div class="oeuvre-details-section">
+        <!-- Price -->
+        <div class="oeuvre-info-block">
+          <label>Prix</label>
+          <value class="oeuvre-price">{{ oeuvre.prix|floatformat:2 }} €</value>
+        </div>
+
+        <!-- Stock -->
+        <div class="oeuvre-info-block">
+          <label>Disponibilité</label>
+          {% if oeuvre.stock > 0 %}
+            <value class="oeuvre-stock in-stock">
+              <i class="bi bi-check-circle"></i> {{ oeuvre.stock }} unité{{ oeuvre.stock|pluralize }} disponible{{ oeuvre.stock|pluralize }}
+            </value>
+          {% else %}
+            <value class="oeuvre-stock out-of-stock">
+              <i class="bi bi-x-circle"></i> Rupture de stock
+            </value>
+          {% endif %}
+        </div>
+
+        <!-- Artist Info -->
+        {% if oeuvre.artiste %}
+          <div class="oeuvre-artist">
+            <div class="artist-avatar">{{ oeuvre.artiste.user.username|first|upper }}</div>
+            <div class="artist-info">
+              <strong>{{ oeuvre.artiste.user.username }}</strong>
+              <small>Artiste</small>
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Description -->
+        {% if oeuvre.description %}
+          <div class="oeuvre-description">
+            <strong style="display: block; margin-bottom: 0.5rem; color: var(--g1);">Description</strong>
+            {{ oeuvre.description|linebreaks }}
+          </div>
+        {% endif %}
+
+        <!-- Meta Info -->
+        <div class="oeuvre-meta">
+          {% if oeuvre.technique %}
+            <div class="meta-item">
+              <div class="meta-label">Technique</div>
+              <div class="meta-value">{{ oeuvre.technique }}</div>
+            </div>
+          {% endif %}
+          {% if oeuvre.dimensions %}
+            <div class="meta-item">
+              <div class="meta-label">Dimensions</div>
+              <div class="meta-value">{{ oeuvre.dimensions }}</div>
+            </div>
+          {% endif %}
+          <div class="meta-item">
+            <div class="meta-label">Statut</div>
+            <div class="meta-value">
+              {% if oeuvre.statut == 'valide' %}
+                <span style="color: #4CAF50;"><i class="bi bi-check-circle"></i> Validée</span>
+              {% elif oeuvre.statut == 'en_attente' %}
+                <span style="color: #FF9800;"><i class="bi bi-hourglass-split"></i> En attente</span>
+              {% elif oeuvre.statut == 'refuse' %}
+                <span style="color: var(--accent);"><i class="bi bi-x-circle"></i> Refusée</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="oeuvre-actions">
+          {% if oeuvre.stock > 0 %}
+            <a href="{% url 'galerie:cart_add' oeuvre.id %}" class="btn-add-cart">
+              <i class="bi bi-bag-plus"></i> Ajouter au panier
+            </a>
+          {% else %}
+            <button class="btn-add-cart" disabled style="opacity: 0.6; cursor: not-allowed;">
+              <i class="bi bi-bag-x"></i> Rupture de stock
+            </button>
+          {% endif %}
+          
+          <!-- Edit Button for Artist -->
+          {% if user.is_authenticated and oeuvre.artiste.user == user %}
+            <a href="{% url 'galerie:oeuvre_update' oeuvre.pk %}" class="btn-add-cart" style="background: linear-gradient(135deg, #6c757d, #5a6268);">
+              <i class="bi bi-pencil"></i> Modifier l'œuvre
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Section for Artist -->
+  {% if user.is_authenticated and oeuvre.artiste.user == user %}
+    <div style="margin-top: 3rem; padding: 2rem; background: #f8f9fa; border-radius: 18px; border-left: 4px solid #4B749F;">
+      <h3 style="color: #243748; font-weight: 700; margin-bottom: 1.5rem;">
+        <i class="bi bi-pencil-square"></i> Modifier cette œuvre
+      </h3>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+        <!-- Edit Links -->
+        <a href="{% url 'galerie:oeuvre_update' oeuvre.pk %}" style="
+          background: linear-gradient(135deg, #4B749F, #243748);
+          color: #fff;
+          padding: 1rem;
+          border-radius: 10px;
+          text-decoration: none;
+          text-align: center;
+          font-weight: 700;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 25px rgba(36, 55, 72, 0.35)'" 
+           onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
+          <i class="bi bi-pencil"></i> Éditer les détails
+        </a>
+        
+        <!-- Dashboard Link -->
+        <a href="{% url 'galerie:artiste_dashboard' %}" style="
+          background: linear-gradient(135deg, #6c757d, #5a6268);
+          color: #fff;
+          padding: 1rem;
+          border-radius: 10px;
+          text-decoration: none;
+          text-align: center;
+          font-weight: 700;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 25px rgba(108, 117, 125, 0.35)'" 
+           onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
+          <i class="bi bi-palette"></i> Retour au dashboard
+        </a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+// Cart functions
+function addToCart(oeuvreId, title, price) {
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const existingItem = cart.find(item => item.id === oeuvreId);
+  
+  if (existingItem) {
+    existingItem.quantity += 1;
+  } else {
+    cart.push({ id: oeuvreId, title, price, quantity: 1 });
+  }
+  
+  localStorage.setItem('cart', JSON.stringify(cart));
+  updateCartBadge();
+  
+  // Show success message
+  alert('✓ ' + title + ' ajouté au panier!');
+}
+
+function updateCartBadge() {
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const badge = document.getElementById('cart-badge');
+  
+  if (badge) {
+    if (totalItems > 0) {
+      badge.textContent = totalItems;
+      badge.style.display = 'inline-block';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  updateCartBadge();
+});
+</script>
+
+{% endblock %}

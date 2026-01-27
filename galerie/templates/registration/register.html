@@ -3,185 +3,343 @@
 
 {% block title %}Inscription | GalerieVirtuelle{% endblock %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'galerie/css/loginCss.css' %}">
+{% block content %}
 <style>
-  .role-info {
-    background-color: #f8f9fa;
-    border-left: 4px solid #007bff;
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 4px;
-  }
-  .role-info h5 {
-    margin-top: 0;
-    color: #007bff;
-  }
-  .role-selector {
+  body {
+    background: linear-gradient(135deg, #243748 0%, #4B749F 100%);
+    min-height: 100vh;
     display: flex;
-    gap: 15px;
-    margin: 20px 0;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
   }
-  .role-option {
-    flex: 1;
-    padding: 15px;
-    border: 2px solid #ddd;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.3s;
+
+  .auth-container {
+    max-width: 500px;
+    width: 100%;
   }
-  .role-option:hover {
-    border-color: #007bff;
-    background-color: #f8f9fa;
+
+  .auth-card {
+    background: white;
+    border-radius: 16px;
+    padding: 3rem 2.5rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.5s ease;
   }
-  .role-option.selected {
-    border-color: #007bff;
-    background-color: #e7f3ff;
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-  .role-option h6 {
-    margin: 0 0 8px 0;
-    color: #333;
+
+  .auth-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
   }
-  .role-option p {
+
+  .auth-title {
+    color: #243748;
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.5px;
+  }
+
+  .auth-subtitle {
+    color: #999;
+    font-size: 0.95rem;
     margin: 0;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: block;
+    color: #243748;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+    font-size: 0.95rem;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+    font-family: inherit;
+    color: #333;
+    box-sizing: border-box;
+  }
+
+  .form-control::placeholder {
+    color: #999;
+  }
+
+  .form-control:hover {
+    border-color: #4B749F;
+    background-color: white;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: #4B749F;
+    background-color: white;
+    box-shadow: 0 0 0 4px rgba(75, 116, 159, 0.1);
+  }
+
+  .form-error {
+    color: #d32f2f;
     font-size: 0.85rem;
+    margin-top: 0.5rem;
+    display: block;
+    font-weight: 500;
+  }
+
+  .form-help {
+    color: #999;
+    font-size: 0.8rem;
+    margin-top: 0.3rem;
+  }
+
+  .btn-register {
+    width: 100%;
+    padding: 0.95rem;
+    font-size: 1rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #4B749F, #243748);
+    border: none;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(75, 116, 159, 0.2);
+  }
+
+  .btn-register:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(75, 116, 159, 0.35);
+  }
+
+  .btn-register:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(75, 116, 159, 0.25);
+  }
+
+  .auth-footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .auth-footer p {
     color: #666;
+    margin: 0 0 1rem 0;
+    font-size: 0.95rem;
+  }
+
+  .btn-login {
+    display: inline-block;
+    color: #4B749F;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    border-bottom: 2px solid transparent;
+  }
+
+  .btn-login:hover {
+    color: #243748;
+    border-bottom-color: #4B749F;
+  }
+
+  .messages {
+    margin-bottom: 1.5rem;
+  }
+
+  .message {
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    border-left: 4px solid;
+    animation: slideDown 0.3s ease;
+  }
+
+  .message.error {
+    background: #ffe0e0;
+    border-color: #FF6B6B;
+    color: #d32f2f;
+  }
+
+  .message.success {
+    background: #e0ffe0;
+    border-color: #4CAF50;
+    color: #1b5e20;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: 576px) {
+    .form-row {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
-{% endblock %}
 
-{% block content %}
-<div class="container-fluid page-content">
-  <div class="login-wrapper">
-    <div class="login-card">
-      <h1>Créer un compte</h1>
-      <p>Rejoignez Galerie Virtuelle</p>
+<div class="auth-container">
+  <div class="auth-card">
+    <!-- HEADER -->
+    <div class="auth-header">
+      <h1 class="auth-title">✨ Inscription</h1>
+      <p class="auth-subtitle">Rejoignez notre communauté d'art</p>
+    </div>
 
-      {% if messages %}
+    <!-- MESSAGES -->
+    {% if messages %}
+      <div class="messages">
         {% for message in messages %}
-          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+          <div class="message {% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">
+            {{ message }}
+          </div>
         {% endfor %}
-      {% endif %}
-
-      <!-- Explication des rôles -->
-      <div class="role-info">
-        <h5><i class="bi bi-info-circle"></i> Qui êtes-vous ?</h5>
-        <ul style="margin: 10px 0; padding-left: 20px;">
-          <li><strong>Visiteur/Client :</strong> Parcourez et achetez des œuvres d'art</li>
-          <li><strong>Artiste :</strong> Exposez et vendez vos créations</li>
-        </ul>
-        <p style="margin: 10px 0; font-size: 0.9rem; color: #666;">
-          <i class="bi bi-shield-lock"></i> Les administrateurs sont gérés par le système
-        </p>
       </div>
+    {% endif %}
 
-      <form method="post">
-        {% csrf_token %}
+    <!-- FORMULAIRE D'INSCRIPTION -->
+    <form method="post" novalidate>
+      {% csrf_token %}
 
-        {% if form.non_field_errors %}
-          <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+      <!-- USERNAME -->
+      <div class="form-group">
+        <label for="{{ form.username.id_for_label }}">Nom d'utilisateur</label>
+        <input
+          type="text"
+          id="{{ form.username.id_for_label }}"
+          name="username"
+          class="form-control"
+          placeholder="Choisissez un nom d'utilisateur"
+          required
+          autofocus
+        >
+        {% if form.username.errors %}
+          <span class="form-error">{{ form.username.errors.0 }}</span>
         {% endif %}
-
-        <!-- Informations de base -->
-        <h6 class="mt-4 mb-3">Informations personnelles</h6>
-
-        <div class="form-group">
-          <input type="text" name="username" placeholder="Nom d'utilisateur" class="form-control" required
-                 value="{{ form.username.value|default:'' }}">
-          {% if form.username.errors %}<small class="error-text">{{ form.username.errors }}</small>{% endif %}
-        </div>
-
-        <div class="form-group">
-          <input type="email" name="email" placeholder="Email" class="form-control" required
-                 value="{{ form.email.value|default:'' }}">
-          {% if form.email.errors %}<small class="error-text">{{ form.email.errors }}</small>{% endif %}
-        </div>
-
-        <div class="form-group">
-          <input type="text" name="first_name" placeholder="Prénom (optionnel)" class="form-control"
-                 value="{{ form.first_name.value|default:'' }}">
-          {% if form.first_name.errors %}<small class="error-text">{{ form.first_name.errors }}</small>{% endif %}
-        </div>
-
-        <div class="form-group">
-          <input type="text" name="last_name" placeholder="Nom (optionnel)" class="form-control"
-                 value="{{ form.last_name.value|default:'' }}">
-          {% if form.last_name.errors %}<small class="error-text">{{ form.last_name.errors }}</small>{% endif %}
-        </div>
-
-        <div class="form-group">
-          <input type="password" name="password1" placeholder="Mot de passe" class="form-control" required>
-          {% if form.password1.errors %}<small class="error-text">{{ form.password1.errors }}</small>{% endif %}
-        </div>
-
-        <div class="form-group">
-          <input type="password" name="password2" placeholder="Confirmer mot de passe" class="form-control" required>
-          {% if form.password2.errors %}<small class="error-text">{{ form.password2.errors }}</small>{% endif %}
-        </div>
-
-        <!-- Sélecteur de rôle -->
-        <h6 class="mt-4 mb-3">Type de compte</h6>
-
-        <div class="form-check">
-          <input type="checkbox" name="is_artiste" id="is_artiste_check" class="form-check-input"
-                 {% if form.is_artiste.value %}checked{% endif %}>
-          <label class="form-check-label" for="is_artiste_check">
-            <i class="bi bi-palette-fill"></i> Je suis artiste
-          </label>
-          {% if form.is_artiste.errors %}<small class="error-text">{{ form.is_artiste.errors }}</small>{% endif %}
-        </div>
-
-        <!-- Champs artiste (optionnels) -->
-        <div id="artisteFields" style="display:none; margin-top: 20px;">
-          <h6 class="mb-3"><i class="bi bi-person-badge"></i> Profil artiste</h6>
-          
-          <div class="form-group">
-            <input type="text" name="nationalite" placeholder="Nationalité" class="form-control"
-                   value="{{ form.nationalite.value|default:'' }}">
-            {% if form.nationalite.errors %}<small class="error-text">{{ form.nationalite.errors }}</small>{% endif %}
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Date de naissance</label>
-            <input type="date" name="date_naissance" class="form-control"
-                   value="{{ form.date_naissance.value|default:'' }}">
-            {% if form.date_naissance.errors %}<small class="error-text">{{ form.date_naissance.errors }}</small>{% endif %}
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Biographie (optionnel)</label>
-            <textarea name="biographie" class="form-control" rows="3"
-                      placeholder="Parlez-nous de vous et de votre travail artistique...">{{ form.biographie.value|default:'' }}</textarea>
-            {% if form.biographie.errors %}<small class="error-text">{{ form.biographie.errors }}</small>{% endif %}
-          </div>
-        </div>
-
-        <button type="submit" class="btn btn-dark w-100 mt-4">S'inscrire</button>
-      </form>
-
-      <div class="footer-text mt-3">
-        <span>Déjà un compte ?</span>
-        <a href="{% url 'galerie:login' %}">Se connecter</a>
+        <div class="form-help">150 caractères max. Lettres, chiffres et @/./+/-/_ uniquement.</div>
       </div>
+
+      <!-- EMAIL -->
+      <div class="form-group">
+        <label for="{{ form.email.id_for_label }}">Adresse email</label>
+        <input
+          type="email"
+          id="{{ form.email.id_for_label }}"
+          name="email"
+          class="form-control"
+          placeholder="votreemail@exemple.com"
+          required
+        >
+        {% if form.email.errors %}
+          <span class="form-error">{{ form.email.errors.0 }}</span>
+        {% endif %}
+      </div>
+
+      <!-- PASSWORD -->
+      <div class="form-group">
+        <label for="{{ form.password1.id_for_label }}">Mot de passe</label>
+        <input
+          type="password"
+          id="{{ form.password1.id_for_label }}"
+          name="password1"
+          class="form-control"
+          placeholder="Entrez un mot de passe sécurisé"
+          required
+        >
+        {% if form.password1.errors %}
+          <span class="form-error">{{ form.password1.errors.0 }}</span>
+        {% endif %}
+        <div class="form-help">Minimum 8 caractères avec majuscules, minuscules et chiffres.</div>
+      </div>
+
+      <!-- PASSWORD CONFIRM -->
+      <div class="form-group">
+        <label for="{{ form.password2.id_for_label }}">Confirmer le mot de passe</label>
+        <input
+          type="password"
+          id="{{ form.password2.id_for_label }}"
+          name="password2"
+          class="form-control"
+          placeholder="Confirmez votre mot de passe"
+          required
+        >
+        {% if form.password2.errors %}
+          <span class="form-error">{{ form.password2.errors.0 }}</span>
+        {% endif %}
+      </div>
+
+      <!-- ROLE -->
+      <div class="form-group">
+        <label for="id_role">Rôle</label>
+        <select name="role" id="id_role" class="form-control" required>
+          <option value="">-- Sélectionnez un rôle --</option>
+          <option value="visiteur">👤 Visiteur (Acheteur)</option>
+          <option value="artiste">🎨 Artiste</option>
+        </select>
+        {% if form.role.errors %}
+          <span class="form-error">{{ form.role.errors.0 }}</span>
+        {% endif %}
+      </div>
+
+      <!-- SUBMIT BUTTON -->
+      <button type="submit" class="btn-register">
+        ✓ Créer mon compte
+      </button>
+
+      <!-- NON-FIELD ERRORS -->
+      {% if form.non_field_errors %}
+        <div style="margin-top: 1rem;">
+          {% for error in form.non_field_errors %}
+            <span class="form-error" style="display: block;">{{ error }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </form>
+
+    <!-- FOOTER -->
+    <div class="auth-footer">
+      <p>Vous avez déjà un compte?</p>
+      <a href="{% url 'galerie:login' %}" class="btn-login">
+        Se connecter →
+      </a>
     </div>
   </div>
 </div>
 
-<script>
-  // Afficher/masquer les champs artiste
-  (function () {
-    const cb = document.getElementById("is_artiste_check");
-    const box = document.getElementById("artisteFields");
-
-    function refresh() {
-      if (!cb || !box) return;
-      box.style.display = cb.checked ? "block" : "none";
-    }
-
-    if (cb) {
-      cb.addEventListener("change", refresh);
-      refresh(); // au chargement
-    }
-  })();
-</script>
 {% endblock %}

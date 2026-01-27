@@ -83,6 +83,29 @@
   left: 12px;
   padding: .45rem .7rem;
   border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.expo-badge.bg-success {
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%) !important;
+  box-shadow: 0 6px 15px rgba(76, 175, 80, 0.35);
+  animation: pulse-success 2s infinite;
+}
+
+.expo-badge.bg-secondary {
+  background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%) !important;
+  box-shadow: 0 6px 15px rgba(108, 117, 125, 0.25);
+}
+
+@keyframes pulse-success {
+  0%, 100% {
+    box-shadow: 0 6px 15px rgba(76, 175, 80, 0.35);
+  }
+  50% {
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.55);
+  }
 }
 
 /* Meta list */

@@ -1,0 +1,559 @@
+{% extends 'galerie/base.html' %}
+{% load static %}
+
+{% block title %}{{ exposition.nom_exposition }} | GalerieVirtuelle{% endblock %}
+
+{% block content %}
+<style>
+  :root {
+    --g1: #243748;
+    --g2: #4B749F;
+  }
+
+  body {
+    background: #f8f9fa;
+  }
+
+  .expo-detail-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+  }
+
+  /* HERO SECTION */
+  .expo-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-bottom: 3rem;
+    align-items: start;
+  }
+
+  .expo-hero-image {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    background: #e9ecef;
+  }
+
+  .expo-hero-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .expo-hero-image-placeholder {
+    width: 100%;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #e9ecef 0%, #f0f0f0 100%);
+    color: #999;
+    font-size: 1rem;
+  }
+
+  /* STATUT BADGE */
+  .expo-status-badge {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+  }
+
+  .expo-status-badge.a-venir {
+    background: #e3f2fd;
+    color: #1565c0;
+  }
+
+  .expo-status-badge.en-cours {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  .expo-status-badge.terminee {
+    background: #f3e5f5;
+    color: #6a1b9a;
+  }
+
+  /* INFO SECTION */
+  .expo-info-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .expo-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--g1);
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+  }
+
+  .expo-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid #e9ecef;
+  }
+
+  .expo-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .expo-meta-label {
+    font-size: 0.85rem;
+    color: #999;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .expo-meta-value {
+    font-size: 1.1rem;
+    color: var(--g1);
+    font-weight: 700;
+  }
+
+  .expo-lieu-badge {
+    background: linear-gradient(135deg, var(--g1), var(--g2));
+    color: white;
+    padding: 0.75rem 1.2rem;
+    border-radius: 8px;
+    display: inline-block;
+  }
+
+  /* DESCRIPTION */
+  .expo-description {
+    margin-bottom: 2rem;
+  }
+
+  .expo-description h3 {
+    color: var(--g1);
+    font-weight: 800;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+  }
+
+  .expo-description-text {
+    color: #666;
+    line-height: 1.8;
+    font-size: 1rem;
+  }
+
+  /* TICKETS SECTION */
+  .tickets-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .tickets-section h3 {
+    color: var(--g1);
+    font-weight: 800;
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+  }
+
+  .tickets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .ticket-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 2px solid #e0e0e0;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ticket-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--g2);
+    box-shadow: 0 8px 24px rgba(75, 116, 159, 0.15);
+  }
+
+  .ticket-type {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--g1);
+    margin-bottom: 0.5rem;
+  }
+
+  .ticket-description {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+  }
+
+  .ticket-price {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--g2);
+    margin-bottom: 1rem;
+  }
+
+  .ticket-stock {
+    font-size: 0.85rem;
+    color: #999;
+    margin-bottom: 1rem;
+  }
+
+  .btn-buy-ticket {
+    background: linear-gradient(135deg, var(--g1), var(--g2));
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+  }
+
+  .btn-buy-ticket:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(36, 55, 72, 0.35);
+    color: white;
+  }
+
+  .btn-buy-ticket:disabled,
+  .btn-buy-ticket.disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* OEUVRES SECTION */
+  .oeuvres-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .oeuvres-section h3 {
+    color: var(--g1);
+    font-weight: 800;
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+  }
+
+  .oeuvres-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .oeuvre-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid #e0e0e0;
+  }
+
+  .oeuvre-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  }
+
+  .oeuvre-image {
+    width: 100%;
+    height: 200px;
+    background: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .oeuvre-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .oeuvre-info {
+    padding: 1rem;
+  }
+
+  .oeuvre-title {
+    font-weight: 700;
+    color: var(--g1);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .oeuvre-artist {
+    font-size: 0.85rem;
+    color: #999;
+    margin-bottom: 0.75rem;
+  }
+
+  .oeuvre-price {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--g2);
+  }
+
+  .btn-view-oeuvre {
+    background: var(--g2);
+    color: white;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    transition: all 0.3s ease;
+    margin-top: 0.75rem;
+    width: 100%;
+  }
+
+  .btn-view-oeuvre:hover {
+    background: var(--g1);
+    color: white;
+  }
+
+  /* BREADCRUMB */
+  .breadcrumb {
+    margin-bottom: 2rem;
+  }
+
+  .breadcrumb a {
+    color: var(--g2);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  .breadcrumb-separator {
+    color: #ccc;
+    margin: 0 0.5rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: #999;
+  }
+
+  .empty-state h4 {
+    color: var(--g1);
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .expo-hero {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .expo-title {
+      font-size: 1.8rem;
+    }
+
+    .expo-meta-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .tickets-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .oeuvres-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+  }
+</style>
+
+<div class="expo-detail-container">
+  <!-- BREADCRUMB -->
+  <div class="breadcrumb">
+    <a href="{% url 'galerie:home' %}">Accueil</a>
+    <span class="breadcrumb-separator">›</span>
+    <a href="{% url 'galerie:expositions_list' %}">Expositions</a>
+    <span class="breadcrumb-separator">›</span>
+    <span>{{ exposition.nom_exposition }}</span>
+  </div>
+
+  <!-- HERO SECTION -->
+  <div class="expo-hero">
+    <!-- IMAGE -->
+    <div class="expo-hero-image">
+      {% if exposition.affiche %}
+        <img src="{{ exposition.affiche.url }}" alt="{{ exposition.nom_exposition }}">
+      {% else %}
+        <div class="expo-hero-image-placeholder">
+          Aucune affiche disponible
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- INFO -->
+    <div class="expo-info-section">
+      <!-- STATUS BADGE -->
+      <div class="expo-status-badge {% if exposition.statut == 'à venir' %}a-venir{% elif exposition.statut == 'en cours' %}en-cours{% else %}terminee{% endif %}">
+        {% if exposition.statut == 'à venir' %}
+          <i class="bi bi-clock-history"></i> À venir
+        {% elif exposition.statut == 'en cours' %}
+          <i class="bi bi-check-circle-fill"></i> En cours
+        {% else %}
+          <i class="bi bi-stop-circle-fill"></i> Terminée
+        {% endif %}
+      </div>
+
+      <!-- TITLE -->
+      <h1 class="expo-title">{{ exposition.nom_exposition }}</h1>
+
+      <!-- META INFO -->
+      <div class="expo-meta-grid">
+        <div class="expo-meta-item">
+          <span class="expo-meta-label">Date de début</span>
+          <span class="expo-meta-value">{{ exposition.date_debut|date:"d M Y" }}</span>
+        </div>
+        <div class="expo-meta-item">
+          <span class="expo-meta-label">Date de fin</span>
+          <span class="expo-meta-value">{{ exposition.date_fin|date:"d M Y" }}</span>
+        </div>
+        {% if exposition.lieu %}
+          <div class="expo-meta-item">
+            <span class="expo-meta-label">Lieu</span>
+            <div class="expo-lieu-badge"><i class="bi bi-geo-alt-fill"></i> {{ exposition.lieu.nom_lieu }}</div>
+          </div>
+        {% endif %}
+        <div class="expo-meta-item">
+          <span class="expo-meta-label">Nombre d'œuvres</span>
+          <span class="expo-meta-value">{{ exposition.oeuvres.count }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DESCRIPTION SECTION -->
+  {% if exposition.description %}
+    <div class="expo-description">
+      <h3>À propos de cette exposition</h3>
+      <p class="expo-description-text">{{ exposition.description }}</p>
+    </div>
+  {% endif %}
+
+  <!-- TICKETS SECTION -->
+  {% if tickets %}
+    <div class="tickets-section">
+      <h3><i class="bi bi-ticket-perforated"></i> Billetterie</h3>
+      {% if exposition.statut == 'à venir' %}
+        <div class="tickets-grid">
+          {% for ticket in tickets %}
+            <div class="ticket-card">
+              <div class="ticket-type">{{ ticket.get_type_ticket_display }}</div>
+              <p class="ticket-description">{{ ticket.description }}</p>
+              <div class="ticket-price">
+                {% if ticket.prix == 0 %}
+                  Gratuit
+                {% else %}
+                  {{ ticket.prix|floatformat:2 }}€
+                {% endif %}
+              </div>
+              <div class="ticket-stock">
+                {% if ticket.est_disponible %}
+                  <i class="bi bi-check-circle-fill"></i> {{ ticket.stock_restant }} place(s) disponible(s)
+                {% else %}
+                  <i class="bi bi-x-circle-fill"></i> Complet
+                {% endif %}
+              </div>
+              <button class="btn-buy-ticket {% if not ticket.est_disponible %}disabled{% endif %}" {% if not ticket.est_disponible %}disabled{% endif %}>
+                <i class="bi bi-cart-plus"></i> Acheter
+              </button>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <p>La billetterie n'est disponible que pour les expositions à venir.</p>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <!-- OEUVRES SECTION -->
+  {% if oeuvres %}
+    <div class="oeuvres-section">
+      <h3><i class="bi bi-easel2"></i> Œuvres en exposition ({{ oeuvres.count }})</h3>
+      <div class="oeuvres-grid">
+        {% for oeuvre in oeuvres %}
+          <div class="oeuvre-card">
+            <div class="oeuvre-image">
+              {% if oeuvre.image %}
+                <img src="{{ oeuvre.image.url }}" alt="{{ oeuvre.titre }}">
+              {% else %}
+                <span style="color: #999;">Aucune image</span>
+              {% endif %}
+            </div>
+            <div class="oeuvre-info">
+              <div class="oeuvre-title">{{ oeuvre.titre }}</div>
+              <div class="oeuvre-artist">
+                par {{ oeuvre.artiste.nom }}
+              </div>
+              <div class="oeuvre-price">{{ oeuvre.prix|floatformat:2 }}€</div>
+              <a href="{% url 'galerie:oeuvre_detail' oeuvre.id %}" class="btn-view-oeuvre">
+                <i class="bi bi-eye"></i> Voir détails
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% else %}
+    <div class="oeuvres-section">
+      <div class="empty-state">
+        <h4>Pas d'œuvres disponibles</h4>
+        <p>Les œuvres seront ajoutées à cette exposition prochainement.</p>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- BACK BUTTON -->
+  <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 2px solid #e9ecef;">
+    <a href="{% url 'galerie:expositions_list' %}" style="
+      display: inline-block;
+      background: linear-gradient(135deg, var(--g1), var(--g2));
+      color: white;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+      transition: all 0.3s ease;
+    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(36, 55, 72, 0.35)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+      <i class="bi bi-arrow-left"></i> Retour aux expositions
+    </a>
+  </div>
+</div>
+
+{% endblock %}

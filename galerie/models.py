@@ -137,6 +137,20 @@ class Oeuvre(models.Model):
         """Vérifie si l'œuvre est disponible à la vente"""
         return self.statut == self.Statut.VALIDE and self.stock > 0
 
+    def valider(self):
+        """Valider une œuvre (passer de EN_ATTENTE à VALIDE)"""
+        from django.utils import timezone
+        self.statut = self.Statut.VALIDE
+        self.date_validation = timezone.now()
+        self.save()
+
+    def refuser(self):
+        """Refuser une œuvre (passer de EN_ATTENTE à REFUSE)"""
+        from django.utils import timezone
+        self.statut = self.Statut.REFUSE
+        self.date_validation = timezone.now()
+        self.save()
+
 
 # ============================================
 # 5. MODÈLE LIEU
@@ -205,6 +219,23 @@ class Exposition(models.Model):
         today = timezone.now().date()
         return self.date_debut <= today <= self.date_fin
 
+    @property
+    def statut(self):
+        """Retourne le statut de l'exposition: 'à venir', 'en cours' ou 'terminée'"""
+        from django.utils import timezone
+        today = timezone.now().date()
+        
+        if today < self.date_debut:
+            return "à venir"
+        elif self.date_debut <= today <= self.date_fin:
+            return "en cours"
+        else:
+            return "terminée"
+    
+    def get_statut_display(self):
+        """Alias pour affichage dans les templates"""
+        return self.statut
+
 
 # ============================================
 # 7. MODÈLE COMMANDE
@@ -213,12 +244,11 @@ class Exposition(models.Model):
 class Commande(models.Model):
     """Commandes passées par les clients"""
 
-    STATUTS = [
-        ("en_cours", "En cours"),
-        ("payee", "Payée"),
-        ("annulee", "Annulée"),
-        ("validee", "Validée"),
-    ]
+    class Statut(models.TextChoices):
+        EN_COURS = "en_cours", "En cours"
+        PAYEE = "payee", "Payée"
+        ANNULEE = "annulee", "Annulée"
+        VALIDEE = "validee", "Validée"
 
     utilisateur = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -238,7 +268,7 @@ class Commande(models.Model):
 
     date_commande = models.DateTimeField(auto_now_add=True)
     montant_total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    statut = models.CharField(max_length=20, choices=STATUTS, default="en_cours")
+    statut = models.CharField(max_length=20, choices=Statut.choices, default=Statut.EN_COURS)
     adresse_livraison = models.TextField(blank=True)
 
     class Meta:
@@ -270,7 +300,7 @@ class LigneCommande(models.Model):
     )
 
     quantite = models.PositiveIntegerField(default=1)
-    prix_unitaire = models.DecimalField(max_digits=10, decimal_places=2)
+    prix_unitaire = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     class Meta:
         db_table = "ligne_commande"
@@ -288,6 +318,8 @@ class LigneCommande(models.Model):
 
     @property
     def sous_total(self):
+        if self.prix_unitaire is None:
+            return 0
         return self.quantite * self.prix_unitaire
 
 
@@ -298,12 +330,17 @@ class LigneCommande(models.Model):
 class Paiement(models.Model):
     """Paiements associés aux commandes"""
 
-    MODES = [
-        ("carte", "Carte bancaire"),
-        ("virement", "Virement"),
-        ("especes", "Espèces"),
-        ("paypal", "PayPal"),
-    ]
+    class Statut(models.TextChoices):
+        EN_ATTENTE = "en_attente", "En attente"
+        SUCCES = "succes", "Succès"
+        ECHEC = "echec", "Échec"
+        ANNULE = "annule", "Annulé"
+
+    class Methode(models.TextChoices):
+        CARTE_BANCAIRE = "carte_bancaire", "Carte bancaire"
+        VIREMENT = "virement", "Virement"
+        ESPECES = "especes", "Espèces"
+        PAYPAL = "paypal", "PayPal"
 
     commande = models.OneToOneField(
         Commande,
@@ -312,9 +349,18 @@ class Paiement(models.Model):
     )
 
     date_paiement = models.DateTimeField(auto_now_add=True)
-    mode_paiement = models.CharField(max_length=20, choices=MODES)
+    methode = models.CharField(
+        max_length=20,
+        choices=Methode.choices,
+        default=Methode.CARTE_BANCAIRE,
+    )
+    statut = models.CharField(
+        max_length=20,
+        choices=Statut.choices,
+        default=Statut.EN_ATTENTE,
+    )
     montant = models.DecimalField(max_digits=10, decimal_places=2)
-    reference_transaction = models.CharField(max_length=100, blank=True)
+    reference = models.CharField(max_length=100, blank=True)
 
     class Meta:
         db_table = "paiement"
@@ -322,7 +368,7 @@ class Paiement(models.Model):
         verbose_name_plural = "Paiements"
 
     def __str__(self):
-        return f"Paiement {self.get_mode_paiement_display()} - {self.montant}"
+        return f"Paiement {self.get_methode_display()} - {self.montant}"
 
 
 # ============================================
@@ -376,3 +422,157 @@ class PanierItem(models.Model):
     @property
     def sous_total(self):
         return self.quantite * self.oeuvre.prix
+
+
+# ============================================
+# 11. MODÈLE NOTIFICATION
+# ============================================
+
+class Notification(models.Model):
+    """Notifications envoyées par l'admin aux artistes et clients"""
+
+    class Type(models.TextChoices):
+        EXPO = "exposition", "Invitation à exposition"
+        UPDATE = "mise_a_jour", "Mise à jour"
+        INFO = "information", "Information"
+        ALERTE = "alerte", "Alerte"
+
+    class Statut(models.TextChoices):
+        NON_LUE = "non_lue", "Non lue"
+        LUE = "lue", "Lue"
+
+    titre = models.CharField(max_length=200)
+    message = models.TextField()
+    type_notif = models.CharField(
+        max_length=20,
+        choices=Type.choices,
+        default=Type.INFO,
+    )
+    statut = models.CharField(
+        max_length=20,
+        choices=Statut.choices,
+        default=Statut.NON_LUE,
+    )
+
+    # Destinataires
+    utilisateur = models.ForeignKey(
+        Utilisateur,
+        on_delete=models.CASCADE,
+        related_name="notifications",
+    )
+
+    # Exposition liée (optionnel)
+    exposition = models.ForeignKey(
+        "Exposition",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="notifications",
+    )
+
+    # Dates
+    date_creation = models.DateTimeField(auto_now_add=True)
+    date_lecture = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = "notification"
+        verbose_name = "Notification"
+        verbose_name_plural = "Notifications"
+        ordering = ["-date_creation"]
+
+    def __str__(self):
+        return f"{self.titre} - {self.utilisateur.username}"
+
+    def marquer_comme_lue(self):
+        from django.utils import timezone
+        self.statut = self.Statut.LUE
+        self.date_lecture = timezone.now()
+        self.save()
+
+class Ticket(models.Model):
+    """Tickets pour les expositions"""
+    
+    class TypeTicket(models.TextChoices):
+        GRATUIT = "gratuit", "Gratuit"
+        STANDARD = "standard", "Standard (15€)"
+        PREMIUM = "premium", "Premium (25€)"
+    
+    exposition = models.ForeignKey(
+        Exposition,
+        on_delete=models.CASCADE,
+        related_name="tickets"
+    )
+    type_ticket = models.CharField(
+        max_length=20,
+        choices=TypeTicket.choices,
+        default=TypeTicket.GRATUIT
+    )
+    prix = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0.00
+    )
+    description = models.TextField(blank=True)
+    stock = models.IntegerField(default=100)
+    stock_restant = models.IntegerField(default=100)
+    date_creation = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = "ticket"
+        verbose_name = "Ticket"
+        verbose_name_plural = "Tickets"
+    
+    def __str__(self):
+        return f"{self.exposition.nom_exposition} - {self.get_type_ticket_display()}"
+    
+    def est_disponible(self):
+        return self.stock_restant > 0
+
+
+class AchatTicket(models.Model):
+    """Achat de tickets par les utilisateurs"""
+    
+    utilisateur = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="achats_tickets"
+    )
+    ticket = models.ForeignKey(
+        Ticket,
+        on_delete=models.CASCADE,
+        related_name="achats"
+    )
+    exposition = models.ForeignKey(
+        Exposition,
+        on_delete=models.CASCADE,
+        related_name="acheteurs_tickets"
+    )
+    quantite = models.IntegerField(default=1)
+    montant_total = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0.00
+    )
+    date_achat = models.DateTimeField(auto_now_add=True)
+    date_visite_prevu = models.DateField(blank=True, null=True)
+    numero_confirmation = models.CharField(
+        max_length=50,
+        unique=True,
+        null=True,
+        blank=True
+    )
+    
+    class Meta:
+        db_table = "achat_ticket"
+        verbose_name = "Achat Ticket"
+        verbose_name_plural = "Achats Tickets"
+        ordering = ["-date_achat"]
+    
+    def __str__(self):
+        return f"{self.utilisateur.username} - {self.exposition.nom_exposition}"
+    
+    def save(self, *args, **kwargs):
+        if not self.numero_confirmation:
+            import uuid
+            self.numero_confirmation = f"TICKET-{uuid.uuid4().hex[:8].upper()}"
+        super().save(*args, **kwargs)

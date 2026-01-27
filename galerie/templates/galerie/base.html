@@ -120,9 +120,26 @@
                     <a class="nav-link cart-link" href="{% url 'galerie:cart_detail' %}">
                         <i class="bi bi-bag-check me-1"></i>
                         <span>Panier</span>
-                        <span class="badge bg-danger badge-cart ms-1" id="cart-badge" style="display: none;">0</span>
+                        {% if cart_count > 0 %}
+                            <span class="badge bg-danger badge-cart ms-1" id="cart-badge">{{ cart_count }}</span>
+                        {% else %}
+                            <span class="badge bg-danger badge-cart ms-1" id="cart-badge" style="display: none;">0</span>
+                        {% endif %}
                     </a>
                 </li>
+
+                {# Notifications Link for authenticated users #}
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link position-relative" href="{% url 'galerie:notifications_list' %}">
+                        <i class="bi bi-bell me-1"></i>
+                        <span>Notifications</span>
+                        {% if unread_notifications_count > 0 %}
+                            <span class="badge bg-danger ms-1" style="font-size: 0.75rem; animation: pulse 2s infinite;">{{ unread_notifications_count }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                {% endif %}
                 
                 {% if user.is_authenticated %}
                 <li class="nav-item dropdown">
@@ -133,6 +150,8 @@
                 <ul class="dropdown-menu dropdown-menu-end">
                     {% if user.is_staff %}
                     <li><a class="dropdown-item" href="{% url 'galerie:admin_dashboard' %}"><i class="bi bi-shield-check"></i> Admin Dashboard</a></li>
+                    <li><a class="dropdown-item" href="{% url 'galerie:notification_send' %}"><i class="bi bi-send-check"></i> Envoyer notification</a></li>
+                    <li><hr class="dropdown-divider"></li>
                     {% endif %}
 
                     {# Show artist space only for actual artists (not admins) #}
@@ -141,6 +160,7 @@
                     {% endif %}
 
                     <li><a class="dropdown-item" href="{% url 'galerie:profile_edit' %}"><i class="bi bi-person"></i> Profil</a></li>
+                    <li><a class="dropdown-item" href="{% url 'galerie:client_dashboard' %}"><i class="bi bi-speedometer2"></i> Tableau de bord</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
                         <form method="post" action="{% url 'galerie:logout' %}?next={% url 'galerie:home' %}" style="display:contents;">

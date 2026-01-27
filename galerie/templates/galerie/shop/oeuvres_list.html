@@ -1,0 +1,636 @@
+{% extends 'galerie/base.html' %}
+{% load static %}
+
+{% block title %}Œuvres | GalerieVirtuelle{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'galerie/css/oeuvres.css' %}">
+
+<style>
+  body {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: 100vh;
+    padding-top: 80px;
+  }
+
+  .oeuvres-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+  }
+
+  /* HERO SECTION */
+  .oeuvre-hero {
+    background: linear-gradient(135deg, #243748 0%, #4B749F 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 3rem;
+    margin-bottom: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2rem;
+    box-shadow: 0 8px 32px rgba(36, 55, 72, 0.15);
+    animation: fadeInDown 0.6s ease;
+  }
+
+  @media (max-width: 768px) {
+    .oeuvre-hero {
+      padding: 2rem;
+    }
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .oeuvre-title {
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    font-size: 2.5rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .oeuvre-subtitle {
+    opacity: 0.85;
+    font-size: 1.1rem;
+    margin: 0;
+  }
+
+  .oeuvre-count {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 0.8rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 700;
+    white-space: nowrap;
+    backdrop-filter: blur(10px);
+    display: inline-block;
+    font-size: 1rem;
+  }
+
+  /* FILTER CARD */
+  .oeuvre-filter-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2.5rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    animation: fadeInUp 0.6s ease;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .oeuvre-filter-card .form-label {
+    color: #243748;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.6rem;
+    display: block;
+  }
+
+  .oeuvre-filter-card .form-control,
+  .oeuvre-filter-card .form-select {
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 0.8rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+  }
+
+  .oeuvre-filter-card .form-control:hover,
+  .oeuvre-filter-card .form-select:hover {
+    border-color: #4B749F;
+    background-color: white;
+  }
+
+  .oeuvre-filter-card .form-control:focus,
+  .oeuvre-filter-card .form-select:focus {
+    border-color: #4B749F;
+    background-color: white;
+    box-shadow: 0 0 0 4px rgba(75, 116, 159, 0.1);
+    outline: none;
+  }
+
+  .btn-gradient {
+    background: linear-gradient(135deg, #4B749F, #243748);
+    border: none;
+    color: white;
+    border-radius: 10px;
+    font-weight: 700;
+    padding: 0.85rem 1.5rem;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    box-shadow: 0 4px 15px rgba(75, 116, 159, 0.2);
+  }
+
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(75, 116, 159, 0.35);
+    color: white;
+  }
+
+  .btn-gradient:active {
+    transform: translateY(0);
+  }
+
+  .btn-outline-secondary {
+    border: 2px solid #e0e0e0;
+    color: #666;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-outline-secondary:hover {
+    border-color: #4B749F;
+    color: #4B749F;
+    background-color: rgba(75, 116, 159, 0.05);
+  }
+
+  /* GRID & CARDS */
+  .oeuvres-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  @media (max-width: 768px) {
+    .oeuvres-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+  }
+
+  .oeuvre-card {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .oeuvre-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+  }
+
+  /* IMAGE WRAPPER */
+  .oeuvre-img-wrap {
+    position: relative;
+    overflow: hidden;
+    background: #f0f0f0;
+    aspect-ratio: 4/3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .oeuvre-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .oeuvre-card:hover .oeuvre-img {
+    transform: scale(1.08);
+  }
+
+  .oeuvre-img-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #e9ecef 0%, #f0f0f0 100%);
+    color: #999;
+  }
+
+  /* BADGES */
+  .oeuvre-badges-left {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .oeuvre-badge {
+    background: rgba(75, 116, 159, 0.9);
+    color: white;
+    padding: 0.5rem 0.85rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .oeuvre-price-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: linear-gradient(135deg, #FF6B6B, #FF4444);
+    color: white;
+    padding: 1rem 1.2rem;
+    border-radius: 0 14px 12px 0;
+    font-weight: 700;
+    font-size: 1.3rem;
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    height: auto;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* BODY */
+  .oeuvre-body {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .oeuvre-name {
+    color: #243748;
+    font-weight: 700;
+    font-size: 1.15rem;
+    margin: 0 0 0.75rem 0;
+    line-height: 1.4;
+  }
+
+  .oeuvre-artist {
+    color: #4B749F;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  .oeuvre-desc {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  .oeuvre-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    padding: 1rem 0;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .oeuvre-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .oeuvre-meta-label {
+    color: #999;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+
+  .oeuvre-meta-value {
+    color: #243748;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  /* PAYMENT SECTION */
+  .oeuvre-payment {
+    margin-top: 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .oeuvre-price-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .oeuvre-price-label {
+    color: #666;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .oeuvre-price-value {
+    color: #FF6B6B;
+    font-weight: 700;
+    font-size: 1.25rem;
+  }
+
+  .oeuvre-stock-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+  }
+
+  .oeuvre-stock-label {
+    color: #666;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .oeuvre-stock-available {
+    color: #4CAF50;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  .oeuvre-stock-unavailable {
+    color: #FF6B6B;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  .oeuvre-action-buttons {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: auto;
+  }
+
+  .oeuvre-action-buttons .btn {
+    flex: 1;
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+  }
+
+  .oeuvre-action-buttons .btn-outline-dark {
+    border: 2px solid #243748;
+    color: #243748;
+    background: transparent;
+  }
+
+  .oeuvre-action-buttons .btn-outline-dark:hover {
+    background: #243748;
+    color: white;
+    border-color: #243748;
+  }
+
+  .oeuvre-action-buttons .btn-primary {
+    background: linear-gradient(135deg, #4B749F, #243748);
+    border: none;
+    color: white;
+    box-shadow: 0 4px 12px rgba(75, 116, 159, 0.2);
+  }
+
+  .oeuvre-action-buttons .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(75, 116, 159, 0.3);
+    color: white;
+  }
+
+  .oeuvre-action-buttons .btn-secondary {
+    background: #e0e0e0;
+    color: #666;
+    border: none;
+    cursor: not-allowed;
+  }
+
+  /* EMPTY STATE */
+  .oeuvre-empty {
+    background: white;
+    border-radius: 14px;
+    padding: 4rem 2rem;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin: 2rem 0;
+  }
+
+  .oeuvre-empty h4 {
+    color: #243748;
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .oeuvre-empty .text-muted {
+    color: #999;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+</style>
+
+<div class="oeuvres-container">
+
+  {# HERO #}
+  <div class="oeuvre-hero">
+    <div>
+      <h1 class="oeuvre-title">🎨 Œuvres</h1>
+      <p class="oeuvre-subtitle">Explorez, recherchez et filtrez les œuvres disponibles</p>
+    </div>
+    <div class="oeuvre-count">{{ oeuvres|length }} résultat{{ oeuvres|length|pluralize }}</div>
+  </div>
+
+  {# FILTER CARD #}
+  <div class="oeuvre-filter-card">
+    <form method="get" class="row g-3 align-items-end">
+
+      <div class="col-12 col-md-5">
+        <label class="form-label">Mot clé</label>
+        <input class="form-control" type="text" name="q"
+               placeholder="Titre, artiste, description..."
+               value="{{ q }}">
+      </div>
+
+      <div class="col-12 col-md-3">
+        <label class="form-label">Catégorie</label>
+        <select class="form-select" name="categorie">
+          <option value="">Toutes catégories</option>
+          {% for c in categories %}
+            <option value="{{ c.id }}" {% if categorie_selected == c.id|stringformat:"s" %}selected{% endif %}>
+              {{ c.nom_categorie }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <label class="form-label">Artiste</label>
+        <select class="form-select" name="artiste">
+          <option value="">Tous les artistes</option>
+          {% for a in artistes %}
+            <option value="{{ a.id }}" {% if artiste_selected == a.id|stringformat:"s" %}selected{% endif %}>
+              {{ a.nom }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-12 col-md-3">
+        <label class="form-label">Technique</label>
+        <select class="form-select" name="technique">
+          <option value="">Toutes les techniques</option>
+          {% for t in techniques %}
+            <option value="{{ t }}" {% if technique == t %}selected{% endif %}>
+              {{ t }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-12 col-md-2">
+        <label class="form-label">Prix min (€)</label>
+        <input class="form-control" type="number" name="prix_min" placeholder="0" value="{{ prix_min }}" step="0.01">
+      </div>
+
+      <div class="col-12 col-md-2">
+        <label class="form-label">Prix max (€)</label>
+        <input class="form-control" type="number" name="prix_max" placeholder="5000" value="{{ prix_max }}" step="0.01">
+      </div>
+
+      <div class="col-12 col-md-3">
+        <label class="form-label">Trier par</label>
+        <select class="form-select" name="tri">
+          <option value="recent" {% if tri == "recent" %}selected{% endif %}>Les plus récentes</option>
+          <option value="prix_croissant" {% if tri == "prix_croissant" %}selected{% endif %}>Prix : croissant</option>
+          <option value="prix_decroissant" {% if tri == "prix_decroissant" %}selected{% endif %}>Prix : décroissant</option>
+          <option value="titre_az" {% if tri == "titre_az" %}selected{% endif %}>Titre : A-Z</option>
+          <option value="titre_za" {% if tri == "titre_za" %}selected{% endif %}>Titre : Z-A</option>
+          <option value="annee_croissant" {% if tri == "annee_croissant" %}selected{% endif %}>Année : ancienne</option>
+          <option value="annee_decroissant" {% if tri == "annee_decroissant" %}selected{% endif %}>Année : récente</option>
+        </select>
+      </div>
+
+      <div class="col-12 col-md-2 d-grid">
+        <button class="btn btn-gradient" type="submit">Filtrer</button>
+      </div>
+
+      <div class="col-12">
+        <a class="btn btn-outline-secondary" href="{% url 'galerie:oeuvres_list' %}">↻ Réinitialiser</a>
+      </div>
+    </form>
+  </div>
+
+  {# ARTWORKS GRID #}
+  <div class="oeuvres-grid">
+    {% for o in oeuvres %}
+      <div class="oeuvre-card">
+
+        <div class="oeuvre-img-wrap">
+          {% if o.image %}
+            <img class="oeuvre-img" src="{{ o.image.url }}" alt="{{ o.titre }}">
+          {% else %}
+            <div class="oeuvre-img oeuvre-img-placeholder d-flex align-items-center justify-content-center">
+              <span class="text-muted fw-semibold">Aucune image</span>
+            </div>
+          {% endif %}
+
+          <div class="oeuvre-badges-left">
+            {% if o.categorie %}
+              <div class="oeuvre-badge">{{ o.categorie.nom_categorie }}</div>
+            {% endif %}
+          </div>
+
+          {% if o.prix %}
+            <div class="oeuvre-price-badge">{{ o.prix|floatformat:0 }}€</div>
+          {% endif %}
+        </div>
+
+        <div class="oeuvre-body">
+          <h5 class="oeuvre-name">{{ o.titre }}</h5>
+
+          {% if o.artiste %}
+            <div class="oeuvre-artist">👤 {{ o.artiste }}</div>
+          {% endif %}
+
+          {% if o.description %}
+            <div class="oeuvre-desc">{{ o.description|truncatewords:20 }}</div>
+          {% endif %}
+
+          <div class="oeuvre-meta">
+            {% if o.annee %}
+              <div class="oeuvre-meta-item">
+                <span class="oeuvre-meta-label">📅 Année</span>
+                <span class="oeuvre-meta-value">{{ o.annee }}</span>
+              </div>
+            {% endif %}
+          </div>
+
+          {# PAYMENT SECTION #}
+          <div class="oeuvre-payment">
+            <div class="oeuvre-stock-section">
+              <span class="oeuvre-stock-label">Disponibilité</span>
+              {% if o.stock > 0 %}
+                <span class="oeuvre-stock-available">✓ {{ o.stock }} en stock</span>
+              {% else %}
+                <span class="oeuvre-stock-unavailable">✗ Rupture</span>
+              {% endif %}
+            </div>
+
+            <div class="oeuvre-action-buttons">
+              <a class="btn btn-outline-dark" href="{% url 'galerie:oeuvre_detail' o.id %}"> 
+                <i class="bi bi-info-circle me-1"></i>Détails
+              </a>
+              {% if o.est_disponible %}
+                <a class="btn btn-primary" href="{% url 'galerie:cart_add' o.id %}">
+                  <i class="bi bi-bag-plus me-1"></i>Ajouter
+                </a>
+              {% else %}
+                <button class="btn btn-secondary" disabled>
+                  <i class="bi bi-x-circle me-1"></i>Indisponible
+                </button>
+              {% endif %}
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    {% empty %}
+      <div class="col-12">
+        <div class="oeuvre-empty">
+          <h4>🔍 Aucune œuvre trouvée</h4>
+          <div class="text-muted">Essayez de modifier les filtres ou de réinitialiser la recherche.</div>
+          <a class="btn btn-outline-secondary" href="{% url 'galerie:oeuvres_list' %}">↻ Réinitialiser</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+{% endblock %}

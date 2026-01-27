@@ -28,6 +28,8 @@ urlpatterns = [
         auth_views.LogoutView.as_view(next_page=reverse_lazy("galerie:home")),
         name="logout",
     ),
+    path("password/change/", auth_views.PasswordChangeView.as_view(template_name="registration/password_change.html"), name="password_change"),
+    path("password/change/done/", auth_views.PasswordChangeDoneView.as_view(template_name="registration/password_change_done.html"), name="password_change_done"),
 
     # Dashboards
     path("artiste/dashboard/", views.artiste_dashboard, name="artiste_dashboard"),
@@ -43,6 +45,7 @@ urlpatterns = [
 
     # Expositions (visiteur)
     path("expositions/", views.expositions_list, name="expositions_list"),
+    path("expositions/<int:pk>/", views.exposition_detail, name="exposition_detail"),
 
     # Artiste
     path("artiste/oeuvre/create/", views.oeuvre_create, name="oeuvre_create"),
@@ -54,12 +57,19 @@ urlpatterns = [
 
     # Panier / commandes
     path("panier/", views.cart_detail, name="cart_detail"),
+    path("panier/", views.cart_detail, name="cart_detail"),
     path("panier/add/<int:oeuvre_id>/", views.cart_add, name="cart_add"),
     path("panier/remove/<int:oeuvre_id>/", views.cart_remove, name="cart_remove"),
+    path("panier/clear/", views.cart_clear, name="cart_clear"),
     path("checkout/", views.checkout, name="checkout"),
     path("commandes/", views.orders_list, name="orders_list"),
     path("commandes/<int:order_id>/payer/", views.order_pay, name="order_pay"),
-    path("commandes/<int:order_id>/payment/confirm/", views.payment_confirm, name="payment_confirm"),
     path("commandes/<int:order_id>/payment/success/", views.payment_success, name="payment_success"),
     path("commandes/<int:order_id>/annuler/", views.order_cancel, name="order_cancel"),
+
+    # Notifications
+    path("notifications/", views.notifications_list, name="notifications_list"),
+    path("notifications/<int:pk>/lire/", views.notification_mark_read, name="notification_mark_read"),
+    path("notifications/<int:pk>/supprimer/", views.notification_delete, name="notification_delete"),
+    path("admin/notifications/envoyer/", views.notification_send, name="notification_send"),
 ]

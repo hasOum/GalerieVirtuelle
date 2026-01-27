@@ -1,0 +1,657 @@
+{% extends 'galerie/base.html' %}
+{% load static %}
+{% block title %}Admin Dashboard | GalerieVirtuelle{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'galerie/css/oeuvres.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root {
+    --g1: #243748;
+    --g2: #4B749F;
+    --accent-1: #e74c3c;
+    --accent-2: #27ae60;
+    --accent-3: #f39c12;
+  }
+
+  .admin-hero {
+    background: linear-gradient(90deg, var(--g1), var(--g2));
+    color: #fff;
+    border-radius: 18px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  .admin-hero h2 {
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .admin-hero p {
+    opacity: 0.9;
+    margin: 0;
+  }
+
+  /* Statistiques Cards */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-left: 4px solid var(--g2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  .stat-card.alert-danger {
+    border-left-color: var(--accent-1);
+  }
+
+  .stat-card.alert-success {
+    border-left-color: var(--accent-2);
+  }
+
+  .stat-card.alert-warning {
+    border-left-color: var(--accent-3);
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--g1);
+    margin: 0.5rem 0;
+  }
+
+  .stat-label {
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-icon {
+    font-size: 2rem;
+    opacity: 0.7;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Charts Section */
+  .charts-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .chart-container {
+    position: relative;
+    height: 300px;
+  }
+
+  .charts-section h3 {
+    color: var(--g1);
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+  }
+
+  /* Top Items */
+  .top-items-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .top-items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+  }
+
+  .top-items-grid h4 {
+    color: var(--g1);
+    font-weight: 800;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .top-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    transition: all 0.3s ease;
+  }
+
+  .top-item:hover {
+    background: #e9ecef;
+    transform: translateX(4px);
+  }
+
+  .top-item-rank {
+    background: linear-gradient(135deg, var(--g1), var(--g2));
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    margin-right: 1rem;
+    flex-shrink: 0;
+  }
+
+  .top-item-content {
+    flex: 1;
+  }
+
+  .top-item-name {
+    font-weight: 700;
+    color: var(--g1);
+    margin-bottom: 0.25rem;
+  }
+
+  .top-item-stat {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  /* Admin Cards */
+  .admin-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .admin-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 1.8rem;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid var(--g2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .admin-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.16);
+  }
+
+  .admin-card-icon {
+    font-size: 2.5rem;
+    color: var(--g2);
+    margin-bottom: 0.75rem;
+  }
+
+  .admin-card h5 {
+    font-weight: 800;
+    color: var(--g1);
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+  }
+
+  .admin-card p {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  .btn-admin {
+    background: linear-gradient(135deg, var(--g1), var(--g2));
+    color: #fff;
+    border-radius: 999px;
+    padding: 0.6rem 1.2rem;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-admin:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(36, 55, 72, 0.35);
+    color: #fff;
+    text-decoration: none;
+  }
+
+  @media (max-width: 768px) {
+    .admin-hero {
+      padding: 1.5rem;
+    }
+
+    .admin-hero h2 {
+      font-size: 1.8rem;
+    }
+
+    .stats-grid,
+    .admin-cards {
+      grid-template-columns: 1fr;
+    }
+
+    .charts-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .chart-container {
+      height: 250px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-5">
+  <!-- Hero Section -->
+  <div class="admin-hero">
+    <h2><i class="bi bi-shield-check"></i> Dashboard Admin</h2>
+    <p>Statistiques et gestion de la plateforme GalerieVirtuelle</p>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-label">Total Œuvres</div>
+      <div class="stat-value">{{ total_oeuvres }}</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">🎨</div>
+      <div class="stat-label">Total Artistes</div>
+      <div class="stat-value">{{ total_artistes }}</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-label">Total Utilisateurs</div>
+      <div class="stat-value">{{ total_utilisateurs }}</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">📦</div>
+      <div class="stat-label">Total Commandes</div>
+      <div class="stat-value">{{ total_commandes }}</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div class="stat-label">Revenu Total</div>
+      <div class="stat-value">{{ total_revenue|floatformat:2 }}€</div>
+    </div>
+    
+    <div class="stat-card alert-danger">
+      <div class="stat-icon">⏳</div>
+      <div class="stat-label">Œuvres en Attente</div>
+      <div class="stat-value">{{ oeuvres_attente_count }}</div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="charts-section">
+    <h3>📈 Analyses</h3>
+    <div class="charts-grid">
+      <!-- Statut Commandes -->
+      <div class="chart-container">
+        <canvas id="commandesChart"></canvas>
+      </div>
+      
+      <!-- Revenue Chart -->
+      <div class="chart-container">
+        <canvas id="revenueChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Items Section -->
+  <div class="top-items-section">
+    <h3 style="color: var(--g1); font-weight: 800; margin-bottom: 1.5rem; font-size: 1.5rem;">🌟 Top Performances</h3>
+    
+    <div class="top-items-grid">
+      <!-- Top Artistes -->
+      <div>
+        <h4>🎨 Top Artistes</h4>
+        {% if top_artistes %}
+          {% for artiste in top_artistes %}
+            <div class="top-item">
+              <div class="top-item-rank">{{ forloop.counter }}</div>
+              <div class="top-item-content">
+                <div class="top-item-name">{{ artiste.nom }}</div>
+                <div class="top-item-stat">{{ artiste.nb_oeuvres }} œuvre(s)</div>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p style="color: #999;">Aucun artiste disponible</p>
+        {% endif %}
+      </div>
+
+      <!-- Top Oeuvres -->
+      <div>
+        <h4>🏆 Œuvres les Plus Vendues</h4>
+        {% if top_oeuvres %}
+          {% for oeuvre in top_oeuvres %}
+            <div class="top-item">
+              <div class="top-item-rank">{{ forloop.counter }}</div>
+              <div class="top-item-content">
+                <div class="top-item-name">{{ oeuvre.titre }}</div>
+                <div class="top-item-stat">{{ oeuvre.nb_ventes }} vente(s)</div>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p style="color: #999;">Aucune vente pour le moment</p>
+        {% endif %}
+      </div>
+
+      <!-- Commandes Status -->
+      <div>
+        <h4>📦 Statut Commandes</h4>
+        <div class="top-item">
+          <div class="top-item-rank" style="background: #f39c12;">⏳</div>
+          <div class="top-item-content">
+            <div class="top-item-name">En Cours</div>
+            <div class="top-item-stat">{{ commandes_en_cours }} commande(s)</div>
+          </div>
+        </div>
+        <div class="top-item">
+          <div class="top-item-rank" style="background: #3498db;">💳</div>
+          <div class="top-item-content">
+            <div class="top-item-name">Payées</div>
+            <div class="top-item-stat">{{ commandes_payees }} commande(s)</div>
+          </div>
+        </div>
+        <div class="top-item">
+          <div class="top-item-rank" style="background: #27ae60;">✅</div>
+          <div class="top-item-content">
+            <div class="top-item-name">Validées</div>
+            <div class="top-item-stat">{{ commandes_validees }} commande(s)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dernières Commandes -->
+  <div style="background: #fff; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);">
+    <h3 style="color: var(--g1); font-weight: 800; margin-bottom: 1.5rem; font-size: 1.5rem;">📜 Dernières Commandes</h3>
+    
+    {% if dernieres_commandes %}
+      <div style="overflow-x: auto;">
+        <table class="table table-hover">
+          <thead style="background: #f8f9fa;">
+            <tr>
+              <th>ID Commande</th>
+              <th>Client</th>
+              <th>Total</th>
+              <th>Statut</th>
+              <th>Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for cmd in dernieres_commandes %}
+              <tr>
+                <td><strong>#{{ cmd.id }}</strong></td>
+                <td>{{ cmd.utilisateur.get_full_name }}</td>
+                <td><strong>{{ cmd.montant_total|floatformat:2 }}€</strong></td>
+                <td>
+                  <span class="badge" style="
+                    background: {% if cmd.statut == 'en_cours' %}#f39c12{% elif cmd.statut == 'payee' %}#3498db{% else %}#27ae60{% endif %};
+                    color: white;
+                  ">
+                    {{ cmd.get_statut_display }}
+                  </span>
+                </td>
+                <td>{{ cmd.date_commande|date:"d/m/Y" }}</td>
+                <td>
+                  <a href="{% url 'admin:galerie_commande_change' cmd.id %}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-eye"></i> Voir
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p style="color: #999; text-align: center;">Aucune commande disponible</p>
+    {% endif %}
+  </div>
+
+  <!-- Admin Cards -->
+  <h3 style="color: var(--g1); font-weight: 800; margin-bottom: 1.5rem; margin-top: 3rem; font-size: 1.5rem;">⚙️ Gestion</h3>
+  <div class="admin-cards">
+    <!-- Gestion Artistes -->
+    <div class="admin-card">
+      <div class="admin-card-icon">
+        <i class="bi bi-palette-fill"></i>
+      </div>
+      <h5>Gestion Artistes</h5>
+      <p>Créer, modifier ou supprimer les profils artistes et gérer leurs informations.</p>
+      <a class="btn-admin" href="{% url 'admin:galerie_artiste_changelist' %}">
+        <i class="bi bi-pencil-square"></i> Gérer
+      </a>
+    </div>
+
+    <!-- Validation Œuvres -->
+    <div class="admin-card">
+      <div class="admin-card-icon">
+        <i class="bi bi-check-circle"></i>
+      </div>
+      <h5>Validation Œuvres</h5>
+      <p>Valider ou refuser les œuvres en attente de validation soumises par les artistes.</p>
+      <a class="btn-admin" href="{% url 'galerie:admin_validation_list' %}">
+        <i class="bi bi-list-check"></i> Valider
+      </a>
+    </div>
+
+    <!-- Gestion Utilisateurs -->
+    <div class="admin-card">
+      <div class="admin-card-icon">
+        <i class="bi bi-people-fill"></i>
+      </div>
+      <h5>Gestion Utilisateurs</h5>
+      <p>Gérer les comptes utilisateurs, les permissions et les rôles sur la plateforme.</p>
+      <a class="btn-admin" href="{% url 'admin:galerie_utilisateur_changelist' %}">
+        <i class="bi bi-gear"></i> Gérer
+      </a>
+    </div>
+
+    <!-- Gestion Commandes -->
+    <div class="admin-card">
+      <div class="admin-card-icon">
+        <i class="bi bi-box-seam"></i>
+      </div>
+      <h5>Gestion Commandes</h5>
+      <p>Consulter et gérer toutes les commandes passées par les clients sur la plateforme.</p>
+      <a class="btn-admin" href="{% url 'admin:galerie_commande_changelist' %}">
+        <i class="bi bi-receipt"></i> Consulter
+      </a>
+    </div>
+
+    <!-- Gestion Catégories -->
+    <div class="admin-card">
+      <div class="admin-card-icon">
+        <i class="bi bi-tags-fill"></i>
+      </div>
+      <h5>Gestion Catégories</h5>
+      <p>Créer et gérer les catégories d'œuvres disponibles sur la plateforme.</p>
+      <a class="btn-admin" href="{% url 'admin:galerie_categorie_changelist' %}">
+        <i class="bi bi-pencil-square"></i> Gérer
+      </a>
+    </div>
+
+    <!-- Gestion Paiements -->
+    <div class="admin-card">
+      <div class="admin-card-icon">
+        <i class="bi bi-credit-card"></i>
+      </div>
+      <h5>Gestion Paiements</h5>
+      <p>Consulter l'historique des paiements et gérer les transactions effectuées.</p>
+      <a class="btn-admin" href="{% url 'admin:galerie_paiement_changelist' %}">
+        <i class="bi bi-receipt"></i> Consulter
+      </a>
+    </div>
+
+    <!-- Gestion Expositions -->
+    <div class="admin-card">
+      <div class="admin-card-icon">
+        <i class="bi bi-calendar-event"></i>
+      </div>
+      <h5>Gestion Expositions</h5>
+      <p>Créer et gérer les expositions virtuelles sur la plateforme.</p>
+      <a class="btn-admin" href="{% url 'admin:galerie_exposition_changelist' %}">
+        <i class="bi bi-pencil-square"></i> Gérer
+      </a>
+    </div>
+
+    <!-- Gestion Lieux -->
+    <div class="admin-card">
+      <div class="admin-card-icon">
+        <i class="bi bi-geo-alt-fill"></i>
+      </div>
+      <h5>Gestion Lieux</h5>
+      <p>Créer et gérer les lieux d'exposition (galeries, musées, etc.).</p>
+      <a class="btn-admin" href="{% url 'admin:galerie_lieu_changelist' %}">
+        <i class="bi bi-pencil-square"></i> Gérer
+      </a>
+    </div>
+
+    <!-- Admin Django -->
+    <div class="admin-card">
+      <div class="admin-card-icon">
+        <i class="bi bi-sliders"></i>
+      </div>
+      <h5>Panel Django Admin</h5>
+      <p>Accès complet au panel d'administration Django avec toutes les options disponibles.</p>
+      <a class="btn-admin" href="{% url 'admin:index' %}">
+        <i class="bi bi-arrow-right"></i> Accéder
+      </a>
+    </div>
+
+    <!-- Gestion Notifications -->
+    <div class="admin-card">
+      <div class="admin-card-icon">
+        <i class="bi bi-send-check"></i>
+      </div>
+      <h5>Envoyer Notifications</h5>
+      <p>Communiquer avec les artistes et clients en envoyant des notifications personnalisées.</p>
+      <a class="btn-admin" href="{% url 'galerie:notification_send' %}">
+        <i class="bi bi-bell"></i> Envoyer
+      </a>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 2px solid #f0f0f0;">
+    <h4 style="color: var(--g1); font-weight: 800; margin-bottom: 1.5rem;">Actions Rapides</h4>
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+      <a href="{% url 'galerie:home' %}" class="btn-admin">
+        <i class="bi bi-house"></i> Accueil
+      </a>
+      <a href="/admin/" class="btn-admin">
+        <i class="bi bi-gear"></i> Admin Django
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Charts Script -->
+<script>
+  // Statut Commandes Chart
+  const commandesCtx = document.getElementById('commandesChart').getContext('2d');
+  new Chart(commandesCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['En Cours', 'Payées', 'Validées'],
+      datasets: [{
+        data: [{{ commandes_en_cours }}, {{ commandes_payees }}, {{ commandes_validees }}],
+        backgroundColor: [
+          '#f39c12',
+          '#3498db',
+          '#27ae60'
+        ],
+        borderColor: '#fff',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom'
+        }
+      }
+    }
+  });
+
+  // Revenue Chart
+  const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+  new Chart(revenueCtx, {
+    type: 'bar',
+    data: {
+      labels: ['Revenu Total'],
+      datasets: [{
+        label: 'Revenu (€)',
+        data: [{{ total_revenue|floatformat:2 }}],
+        backgroundColor: 'rgba(36, 55, 72, 0.8)',
+        borderColor: 'rgba(36, 55, 72, 1)',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      },
+      plugins: {
+        legend: {
+          position: 'bottom'
+        }
+      }
+    }
+  });
+</script>
+
+{% endblock %}

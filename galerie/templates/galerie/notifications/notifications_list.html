@@ -1,0 +1,377 @@
+{% extends "galerie/base.html" %}
+{% load static %}
+
+{% block title %}Notifications - Galerie Virtuelle{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --g1: #243748;
+        --g2: #4B749F;
+        --accent: #FF6B6B;
+        --success: #4CAF50;
+        --warning: #FFC107;
+        --info: #17A2B8;
+    }
+
+    .notifications-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .notifications-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        background: linear-gradient(135deg, var(--g1) 0%, var(--g2) 100%);
+        padding: 2rem;
+        border-radius: 12px;
+        color: white;
+    }
+
+    .notifications-header h1 {
+        margin: 0;
+        font-size: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .badge-count {
+        background-color: var(--accent);
+        padding: 0.5rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .mark-all-btn {
+        background-color: var(--success);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .mark-all-btn:hover {
+        background-color: #45a049;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .notifications-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .notification-card {
+        background: white;
+        border-left: 4px solid var(--info);
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+    }
+
+    .notification-card:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        transform: translateX(4px);
+    }
+
+    .notification-card.non_lue {
+        background: linear-gradient(to right, rgba(255, 107, 107, 0.08), transparent);
+        border-left-color: var(--accent);
+    }
+
+    .notification-card.exposition {
+        border-left-color: #9C27B0;
+    }
+
+    .notification-card.mise_a_jour {
+        border-left-color: #2196F3;
+    }
+
+    .notification-card.alerte {
+        border-left-color: var(--warning);
+    }
+
+    .notification-content {
+        flex: 1;
+    }
+
+    .notification-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .notification-titre {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--g1);
+        margin: 0;
+    }
+
+    .notification-type {
+        display: inline-block;
+        padding: 0.3rem 0.6rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .notification-type.exposition {
+        background-color: rgba(156, 39, 176, 0.15);
+        color: #9C27B0;
+    }
+
+    .notification-type.mise_a_jour {
+        background-color: rgba(33, 150, 243, 0.15);
+        color: #2196F3;
+    }
+
+    .notification-type.information {
+        background-color: rgba(23, 162, 184, 0.15);
+        color: var(--info);
+    }
+
+    .notification-type.alerte {
+        background-color: rgba(255, 193, 7, 0.15);
+        color: var(--warning);
+    }
+
+    .notification-message {
+        color: #555;
+        margin: 0.75rem 0;
+        line-height: 1.5;
+    }
+
+    .notification-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.85rem;
+        color: #999;
+    }
+
+    .notification-date {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .notification-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-left: 1rem;
+    }
+
+    .btn-action {
+        background: none;
+        border: none;
+        padding: 0.5rem;
+        cursor: pointer;
+        color: #999;
+        transition: all 0.3s ease;
+        border-radius: 4px;
+    }
+
+    .btn-action:hover {
+        color: white;
+        background-color: var(--g2);
+    }
+
+    .btn-action.delete:hover {
+        background-color: var(--accent);
+    }
+
+    .btn-action i {
+        font-size: 1.1rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        background: linear-gradient(135deg, rgba(36, 55, 72, 0.05), rgba(75, 116, 159, 0.05));
+        border-radius: 12px;
+        border: 2px dashed #ddd;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: #ccc;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+        color: #999;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    .empty-state small {
+        display: block;
+        color: #bbb;
+        margin-top: 0.5rem;
+    }
+
+    .notification-status-badge {
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .notification-status-badge.lue {
+        background-color: rgba(76, 175, 80, 0.15);
+        color: var(--success);
+    }
+
+    .notification-status-badge.non_lue {
+        background-color: rgba(255, 107, 107, 0.15);
+        color: var(--accent);
+    }
+
+    @media (max-width: 768px) {
+        .notification-card {
+            flex-direction: column;
+        }
+
+        .notification-actions {
+            margin-left: 0;
+            margin-top: 1rem;
+            justify-content: flex-start;
+        }
+
+        .notifications-header {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .notifications-header h1 {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<div class="notifications-container">
+    <div class="notifications-header">
+        <h1>
+            <i class="bi bi-bell-fill"></i>
+            Notifications
+            {% if unread_count > 0 %}
+                <span class="badge-count">{{ unread_count }}</span>
+            {% endif %}
+        </h1>
+        {% if unread_count > 0 %}
+            <a href="?mark_read=1" class="mark-all-btn">
+                <i class="bi bi-check2-all"></i> Marquer tout comme lu
+            </a>
+        {% endif %}
+    </div>
+
+    {% if notifications %}
+        <div class="notifications-list">
+            {% for notification in notifications %}
+                <div class="notification-card {% if notification.statut == 'non_lue' %}non_lue{% endif %} {{ notification.type_notif }}">
+                    <div class="notification-content">
+                        <div class="notification-header">
+                            <h2 class="notification-titre">{{ notification.titre }}</h2>
+                            <span class="notification-type {{ notification.type_notif }}">
+                                {% if notification.type_notif == 'exposition' %}
+                                    <i class="bi bi-image"></i> Exposition
+                                {% elif notification.type_notif == 'mise_a_jour' %}
+                                    <i class="bi bi-arrow-repeat"></i> Mise à jour
+                                {% elif notification.type_notif == 'alerte' %}
+                                    <i class="bi bi-exclamation-circle"></i> Alerte
+                                {% else %}
+                                    <i class="bi bi-info-circle"></i> Information
+                                {% endif %}
+                            </span>
+                            <span class="notification-status-badge {{ notification.statut }}">
+                                {% if notification.statut == 'lue' %}
+                                    LUE
+                                {% else %}
+                                    NON LUE
+                                {% endif %}
+                            </span>
+                        </div>
+
+                        <p class="notification-message">{{ notification.message }}</p>
+
+                        {% if notification.exposition %}
+                            <div class="notification-meta">
+                                <span>
+                                    <strong>Exposition:</strong>
+                                    <a href="{% url 'galerie:expositions_list' %}" style="color: var(--g2); text-decoration: none;">
+                                        {{ notification.exposition.nom_exposition }}
+                                    </a>
+                                </span>
+                            </div>
+                        {% endif %}
+
+                        <div class="notification-meta">
+                            <div class="notification-date">
+                                <i class="bi bi-clock"></i>
+                                <span title="{{ notification.date_creation }}">
+                                    {{ notification.date_creation|date:"d M Y à H:i" }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="notification-actions">
+                        {% if notification.statut == 'non_lue' %}
+                            <form action="{% url 'galerie:notification_mark_read' notification.pk %}" method="POST" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-action" title="Marquer comme lu" onclick="return confirm('Marquer cette notification comme lue ?');">
+                                    <i class="bi bi-check-circle"></i>
+                                </button>
+                            </form>
+                        {% endif %}
+                        
+                        <form action="{% url 'galerie:notification_delete' notification.pk %}" method="POST" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-action delete" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette notification ?');">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <p>Aucune notification pour le moment</p>
+            <small>Revenez plus tard pour vérifier vos notifications</small>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    // Confirmation avant suppression AJAX
+    document.querySelectorAll('.btn-action').forEach(button => {
+        button.addEventListener('click', function(e) {
+            if (this.classList.contains('delete')) {
+                if (!confirm('Êtes-vous sûr de vouloir supprimer cette notification ?')) {
+                    e.preventDefault();
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

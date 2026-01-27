@@ -18,11 +18,15 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth.views import LoginView, LogoutView
+from django.views.generic import TemplateView
 
 urlpatterns = [
     # Galerie URLs must come BEFORE admin to avoid conflicts with /admin/dashboard/
     path('', include('galerie.urls')),
-    path('accounts/', include('django.contrib.auth.urls')),  # login/logout Django
+    # Custom auth URLs pointing to galerie/auth/ templates
+    path('accounts/login/', LoginView.as_view(template_name='galerie/auth/login.html'), name='login'),
+    path('accounts/logout/', LogoutView.as_view(template_name='galerie/auth/logout.html'), name='logout'),
     path('admin/', admin.site.urls),  # Django admin - must be last to avoid conflicts
 ]
 

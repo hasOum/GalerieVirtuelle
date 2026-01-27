@@ -98,6 +98,22 @@ document.addEventListener('DOMContentLoaded', function() {
   setInterval(updateCartBadge, 1000);
 });
 
+// ===== CSRF TOKEN =====
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
 // ===== CHECKOUT =====
 function proceedToCheckout() {
   const cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -107,11 +123,14 @@ function proceedToCheckout() {
   }
   
   // Désactiver le bouton pour éviter les clics multiples
-  const button = event.target;
+  const button = event.target.closest('button');
   if (button) {
     button.disabled = true;
     button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Traitement...';
   }
+  
+  console.log('Cart data:', cart);
+  console.log('CSRF Token:', getCookie('csrftoken'));
   
   // Envoyer le panier au serveur via AJAX
   fetch('/checkout/', {
@@ -124,8 +143,13 @@ function proceedToCheckout() {
       cart: cart
     })
   })
-  .then(response => response.json())
-  .then(data => {
+  .then(response => {
+    console.log('Response status:', response.status);
+    console.log('Response headers:', response.headers);
+    return response.json().then(data => ({ status: response.status, data: data }));
+  })
+  .then(({ status, data }) => {
+    console.log('Response data:', data);
     if (data.success) {
       // Vider le localStorage
       localStorage.removeItem('cart');
@@ -140,8 +164,9 @@ function proceedToCheckout() {
     }
   })
   .catch(error => {
-    console.error('Error:', error);
-    showNotification('Une erreur est survenue', 'error');
+    console.error('Fetch error:', error);
+    console.error('Error message:', error.message);
+    showNotification('Une erreur est survenue: ' + error.message, 'error');
     if (button) {
       button.disabled = false;
       button.innerHTML = '<i class="bi bi-credit-card me-2"></i>Procéder au paiement';
